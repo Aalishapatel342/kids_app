@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kids Dashboard</title>
+    <style>
+        html {
+            height: 100%;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            float: left;
+            height: 100vh;
+        }
+
+        .sidebar h2 {
+            color: #ff6b6b;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 1.8em;
+        }
+
+        .sidebar a {
+            display: block;
+            color: #555;
+            text-decoration: none;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            transition: background 0.3s;
+        }
+
+        .sidebar a:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .main {
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .topbar {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .topbar input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        .topbar input:focus {
+            border-color: #ff6b6b;
+            outline: none;
+        }
+
+        .cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s;
+            border: 2px solid #ff6b6b;
+            min-width: 300px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card h3 {
+            color: #ff6b6b;
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+
+        .card p {
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .card button {
+            background: linear-gradient(45deg, #ff6b6b, #ffa726);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .card button:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Vertical Sidebar -->
+<div class="sidebar">
+    <h2>MINI CLUB</h2>
+    <a href="{{ url_for('kids_dashboard') }}">Dashboard</a>
+    <a href="#">Activities</a>
+    <a href="#">Progress</a>
+    <a href="{{ url_for('logout') }}">Logout</a>
+</div>
+
+<!-- Main Content -->
+<div class="main">
+
+    <!-- Top Navbar -->
+    <div class="topbar">
+        <h1>Welcome to Kids Dashboard{% if username %}, {{ username }}{% endif %}!</h1>
+        <input type="text" placeholder="Search activities...">
+    </div>
+
+    <!-- Activity Cards -->
+    <div class="cards">
+
+        <div class="card">
+            <h3>🔤 Learn Alphabet</h3>
+            <p>A to Z learning for kids</p>
+            <a href="/alphabet"><button>Start</button></a>
+        </div>
+
+        <div class="card">
+            <h3>🔢 Learn Numbers</h3>
+            <p>1 to 20 fun counting</p>
+            <a href="/numbers"><button>Start</button></a>
+        </div>
+
+        <div class="card">
+            <h3>🎨 Drawing</h3>
+            <p>Color & drawing fun</p>
+            <a href="/drawing"><button>Start</button></a>
+        </div>
+
+        <div class="card">
+        <h3>📽️ Rhymes & Music</h3>
+        <p>Fun rhymes videos</p>
+        <a href="{{ url_for('kids_videos') }}"><button>Start</button></a>
+        </div>
+
+    </div>
+</div>
+</body>
+</html>
