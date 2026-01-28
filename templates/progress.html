@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Kids Dashboard</title>
+    <title>Progress Report</title>
     <style>
         html {
             height: 100%;
@@ -11,27 +11,19 @@
             font-family: 'Comic Sans MS', cursive, sans-serif;
             margin: 0;
             padding: 0;
-            {% if gender == 'male' %}
             background: linear-gradient(135deg, #87ceeb 0%, #4682b4 100%);
-            {% else %}
-            background: linear-gradient(135deg, #ffb6d5 0%, #ff9ac8 50%, #ffd6ea 100%);
-            {% endif %}
             color: #333;
             min-height: 100vh;
         }
 
-        /* ===== NEW SIDEBAR STYLE ===== */
+        /* ===== SIDEBAR STYLE ===== */
         .sidebar {
             position: fixed;
             left: 0;
             top: 0;
             width: 220px;
             height: 100%;
-            {% if gender == 'male' %}
             background: linear-gradient(180deg, #4682b4, #87ceeb);
-            {% else %}
-            background: linear-gradient(180deg, #ffe4e1, #ffb6d5);
-            {% endif %}
             padding-top: 20px;
             box-shadow: 5px 0 15px rgba(0,0,0,0.2);
             z-index: 1000;
@@ -94,23 +86,10 @@
             padding: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
+            text-align: center;
         }
 
-        .topbar input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 25px;
-            font-size: 16px;
-            box-sizing: border-box;
-        }
-
-        .topbar input:focus {
-            border-color: #ff6b6b;
-            outline: none;
-        }
-
-        .cards {
+        .progress-cards {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
@@ -119,13 +98,13 @@
 
         .card {
             background: white;
-            padding: 20px;
+            padding: 30px;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
             transition: transform 0.3s;
             border: 2px solid #ff6b6b;
-            min-width: 300px;
+            min-width: 250px;
         }
 
         .card:hover {
@@ -135,27 +114,19 @@
         .card h3 {
             color: #ff6b6b;
             margin-bottom: 10px;
-            font-size: 1.5em;
+            font-size: 2em;
         }
 
         .card p {
             color: #666;
             margin-bottom: 20px;
+            font-size: 1.2em;
         }
 
-        .card button {
-            background: linear-gradient(45deg, #ff6b6b, #ffa726);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-
-        .card button:hover {
-            transform: scale(1.05);
+        .big-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #ff6b6b;
         }
     </style>
 </head>
@@ -163,72 +134,54 @@
 
 <!-- SIDEBAR -->
 <div class="sidebar">
-    <h3 class="logo">🧒 KidZone</h3>
+    <h3 class="logo">🧒 MINI CLUB</h3>
 
-    <a href="/kids-dashboard">🏠 Dashboard</a>
+    <a href="{{ url_for('kids_dashboard') }}">🏠 Dashboard</a>
     <a href="/activities">🎨 Activities</a>
     <a href="/progress">📊 Progress</a>
 
     <div class="dropdown">
         <button class="dropbtn">⚙ Settings ▾</button>
         <div class="dropdown-content">
-            <a href="/profile">👶 My Profile</a>
+            <a href="{{ url_for('profile') }}">👶 My Profile</a>
             <a href="/about">ℹ About</a>
             <a href="/query">❓ Any Query</a>
         </div>
     </div>
 
-    <a href="/logout" class="logout">🚪 Logout</a>
+    <a href="{{ url_for('logout') }}" class="logout">🚪 Logout</a>
 </div>
 
-<!-- MAIN CONTENT -->
+<!-- Main Content -->
 <div class="main">
 
+    <!-- Top Navbar -->
     <div class="topbar">
-        <h1>Welcome{% if username %}, {{ username }}{% endif %}! 👋</h1>
-        <input type="text" placeholder="Search activities...">
+        <h1>Your Progress Report!</h1>
     </div>
 
-    <div class="cards">
+    <!-- Progress Cards -->
+    <div class="progress-cards">
 
         <div class="card">
-            <h3>🧠 Smart Quiz</h3>
-            <p>Test your brain & earn coins</p>
-            <a href="/quiz"><button>Start Quiz</button></a>
+            <h3>📝 Attempts</h3>
+            <p class="big-number">{{ attempts }}</p>
+            <p>Times you took the quiz</p>
         </div>
 
         <div class="card">
-            <h3>🔤 Learn Alphabet</h3>
-            <p>A to Z learning for kids</p>
-            <a href="/alphabet"><button>Start</button></a>
+            <h3>🏆 Total Score</h3>
+            <p class="big-number">{{ total }}</p>
+            <p>Points earned overall</p>
         </div>
 
         <div class="card">
-            <h3>🔢 Learn Numbers</h3>
-            <p>1 to 20 fun counting</p>
-            <a href="/numbers"><button>Start</button></a>
-        </div>
-
-        <div class="card">
-            <h3>🎨 Drawing</h3>
-            <p>Color & drawing fun</p>
-            <a href="/drawing"><button>Start</button></a>
-        </div>
-
-        <div class="card">
-            <h3>🧠 Math Games</h3>
-            <p>Addition & subtraction</p>
-            <a href="/math"><button>Start</button></a>
-        </div>
-
-        <div class="card">
-            <h3>📖 Word Builder</h3>
-            <p>Spell & learn words</p>
-            <a href="/words"><button>Start</button></a>
+            <h3>📊 Average Score</h3>
+            <p class="big-number">{{ avg }}</p>
+            <p>Average points per quiz</p>
         </div>
 
     </div>
 </div>
-
 </body>
 </html>

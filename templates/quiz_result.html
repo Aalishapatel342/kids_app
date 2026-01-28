@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Quiz Result</title>
+<style>
+body{
+    font-family: Comic Sans MS;
+    background: linear-gradient(135deg,#22c55e,#86efac);
+    text-align:center;
+    padding-top:100px;
+}
+.card{
+    background:white;
+    width:400px;
+    margin:auto;
+    padding:30px;
+    border-radius:25px;
+    box-shadow:0 15px 40px rgba(0,0,0,0.3);
+}
+h1{color:#16a34a;}
+.coins{
+    font-size:22px;
+    margin:20px;
+}
+a{
+    display:inline-block;
+    padding:12px 25px;
+    background:#2563eb;
+    color:white;
+    border-radius:20px;
+    text-decoration:none;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+<h1>🎉 Great Job!</h1>
+<p>Your Score: <b>{{ score }}</b></p>
+<div class="coins">🪙 Total Coins: {{ coins }}</div>
+<a href="/junior-dashboard">Back to Dashboard</a>
+</div>
+
+</body>
+</html>

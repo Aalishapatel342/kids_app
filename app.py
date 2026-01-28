@@ -1,9 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, session
-from models import db, User
 import requests
 import re# Fixed YouTube API call
 from googleapiclient.discovery import build
-
+from models import db, User, QuizResult, Coins
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
@@ -91,16 +90,53 @@ def kids_dashboard():
         return redirect(url_for('login'))
     if session.get('age') != '1-4':
         return redirect(url_for('junior_dashboard'))
-    return render_template('kids_dashboard.html', username=session.get('username'))
+
+    user = User.query.get_or_404(session['user_id'])
+
+    return render_template('kids_dashboard.html', username=session.get('username'), gender=user.gender)
 
 @app.route('/junior-dashboard')
 def junior_dashboard():
     if 'user_id' not in session:
         return redirect(url_for('login'))
+
     if session.get('age') != '5+':
         return redirect(url_for('kids_dashboard'))
-    return render_template('junior_dashboard.html', username=session.get('username'))
 
+    # Get coins
+    coins_obj = Coins.query.filter_by(user_id=session['user_id']).first()
+    coins = coins_obj.coins if coins_obj else 0
+
+    user = User.query.get_or_404(session['user_id'])
+
+    return render_template(
+        'junior_dashboard.html',
+        username=session.get('username'),
+        coins=coins,
+        gender=user.gender
+    )
+
+@app.route('/profile', methods=['GET','POST'])
+def profile():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user = User.query.get_or_404(session['user_id'])
+
+    if request.method == 'POST':
+        user.username = request.form.get('username')
+        user.age = request.form.get('age')
+        user.email = request.form.get('email')
+        user.phone = request.form.get('phone')
+
+        db.session.commit()
+
+        session['username'] = user.username
+        session['age'] = user.age
+
+        return redirect(url_for('profile'))  # prevent form resubmission
+
+    return render_template('profile.html', user=user)
 
 # Fallback dashboard route to fix old links
 @app.route('/dashboard')
@@ -178,6 +214,76 @@ def kids_videos():
         reference_videos=reference_videos,
         query=query
     )
+    
+QUIZ_QUESTIONS = [
+    {"question": "5 + 3 = ?", "answer": "8"},
+    {"question": "10 - 4 = ?", "answer": "6"},
+    {"question": "Spell APPLE", "answer": "apple"}
+]
+
+@app.route('/quiz', methods=['GET','POST'])
+def quiz():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        score = 0
+
+        for i, q in enumerate(QUIZ_QUESTIONS):
+            user_answer = request.form.get(f"q{i}", "").lower()
+            if user_answer == q["answer"]:
+                score += 1
+
+        # Save score
+        db.session.add(QuizResult(user_id=session['user_id'], score=score))
+
+        # Reward coins
+        coins = Coins.query.filter_by(user_id=session['user_id']).first()
+        if not coins:
+            coins = Coins(user_id=session['user_id'], coins=0)
+
+        coins.coins += score * 10
+
+        db.session.add(coins)
+        db.session.commit()
+
+        return redirect(url_for('quiz_result'))
+
+    return render_template("quiz.html", questions=QUIZ_QUESTIONS)
+
+@app.route('/quiz-result')
+def quiz_result():
+    last = QuizResult.query.filter_by(user_id=session['user_id']).order_by(QuizResult.id.desc()).first()
+    coins = Coins.query.filter_by(user_id=session['user_id']).first()
+
+    return render_template("quiz_result.html", score=last.score, coins=coins.coins)
+
+@app.route('/progress')
+def progress():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    results = QuizResult.query.filter_by(user_id=session['user_id']).all()
+
+    attempts = len(results)
+    total_score = sum(r.score for r in results)
+    avg = round(total_score / attempts, 2) if attempts else 0
+
+    return render_template("progress.html",
+                           attempts=attempts,
+                           total=total_score,
+                           avg=avg)
+
+CAREERS = [
+    {"name": "Doctor", "desc": "Helps sick people"},
+    {"name": "Pilot", "desc": "Flies airplanes"},
+    {"name": "Engineer", "desc": "Builds machines"},
+    {"name": "Teacher", "desc": "Teaches students"},
+]
+
+@app.route('/careers')
+def careers():
+    return render_template("careers.html", careers=CAREERS)
 
 if __name__ == "__main__":
     app.run(debug=True)
