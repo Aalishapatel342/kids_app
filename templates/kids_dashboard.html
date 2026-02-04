@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Kids Dashboard</title>
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
     <style>
         html {
             height: 100%;
@@ -27,11 +28,8 @@
             top: 0;
             width: 220px;
             height: 100%;
-            {% if gender == 'male' %}
-            background: linear-gradient(180deg, #4682b4, #87ceeb);
-            {% else %}
-            background: linear-gradient(180deg, #ffe4e1, #ffb6d5);
-            {% endif %}
+            background: linear-gradient(180deg, #000000, #ff6b6b);
+            color: white;
             padding-top: 20px;
             box-shadow: 5px 0 15px rgba(0,0,0,0.2);
             z-index: 1000;
@@ -90,7 +88,8 @@
         }
 
         .topbar {
-            background: rgba(255, 255, 255, 0.9);
+            background: linear-gradient(180deg, #000000, #ff6b6b);
+            color: white;
             padding: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
@@ -165,7 +164,7 @@
 <div class="sidebar">
     <h3 class="logo">🧒 MINI CLUB</h3>
 
-    <a href="{{ url_for('kids_dashboard') }}">🏠 Dashboard</a>
+    <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
     <a href="/activities">🎨 Activities</a>
     <a href="/progress">📊 Progress</a>
 

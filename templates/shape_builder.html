@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Shape Builder</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/shape.css') }}">
+</head>
+<body>
+
+<div class="shape-header">
+    <h1>🧩 Shape Builder</h1>
+    <p>Build a <strong>{{ target.name }}</strong></p>
+</div>
+
+<div class="shape-toolbar">
+    <button onclick="addShape('circle')">🔵 Circle</button>
+    <button onclick="addShape('square')">🟥 Square</button>
+    <button onclick="addShape('triangle')">🔺 Triangle</button>
+    <button onclick="clearCanvas()">🗑️ Clear</button>
+</div>
+
+<div id="shapeCanvas">
+</div>
+
+<button class="done-btn" onclick="finishWork()">✅ I'm Done</button>
+
+<script>
+    const TARGET_KEY = "{{ target_key }}";
+</script>
+<script src="{{ url_for('static', filename='js/shape.js') }}"></script>
+</body>
+</html>

@@ -1,118 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Drawing Fun - Kids App</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <style>
-        body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
-            margin: 0;
-            padding: 20px;
-            color: #333;
-        }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-        h1 {
-            color: #ff6b6b;
-            margin-bottom: 30px;
-        }
-        canvas {
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            background: white;
-            display: block;
-            margin: 0 auto 20px;
-        }
-        .tools {
-            margin-bottom: 20px;
-        }
-        .tools button {
-            background: linear-gradient(45deg, #ff6b6b, #ffa726);
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 0 10px;
-            transition: transform 0.2s;
-        }
-        .tools button:hover {
-            transform: scale(1.05);
-        }
-        .btn {
-            background: linear-gradient(45deg, #ff6b6b, #ffa726);
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 25px;
-            font-size: 18px;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .btn:hover {
-            transform: scale(1.05);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drawing Fun - Kids App</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap');
+
+    body {
+        margin: 0;
+        font-family: 'Comic Neue', cursive;
+        background: linear-gradient(135deg, #ff9a9e, #fecfef);
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+    }
+
+    header {
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        padding: 10px 20px;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        gap: 10px;
+    }
+
+    header button, header input[type="color"], header input[type="range"] {
+        cursor: pointer;
+        border: none;
+        border-radius: 25px;
+        padding: 8px 15px;
+        font-size: 16px;
+        background: linear-gradient(45deg, #ff6b6b, #ffa726);
+        color: white;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        transition: all 0.2s ease;
+    }
+
+    header button:hover, header input[type="color"]:hover, header input[type="range"]:hover {
+        transform: scale(1.1);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+    header input[type="range"] {
+        padding: 0;
+        width: 120px;
+    }
+
+    #toolbar-label {
+        font-size: 18px;
+        margin-right: 5px;
+        color: #ff6b6b;
+    }
+
+    main {
+        flex: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+    }
+
+    canvas {
+        border-radius: 15px;
+        border: 4px solid #ff9a9e;
+        background: #fff;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        max-width: 100%;
+        max-height: 100%;
+    }
+
+    footer {
+        text-align: center;
+        padding: 10px;
+        background: rgba(255, 255, 255, 0.9);
+    }
+
+    footer button {
+        font-size: 18px;
+        padding: 10px 25px;
+        border-radius: 25px;
+        background: linear-gradient(45deg, #ff6b6b, #ffa726);
+        color: white;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        transition: all 0.2s ease;
+    }
+
+    footer button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>🎨 Drawing Fun</h1>
-        <div class="tools">
-            <button onclick="clearCanvas()">Clear</button>
-            <input type="color" id="colorPicker" value="#000000">
-            <input type="range" id="brushSize" min="1" max="20" value="5">
-        </div>
-        <canvas id="drawingCanvas" width="600" height="400"></canvas>
-        <br>
-        <a href="{{ url_for('dashboard') }}"><button class="btn">Back to Dashboard</button></a>
+
+<header>
+    <div class="left-tools">
+        <a href="{{ url_for('dashboard') }}" class="back-btn">← Dashboard</a>
+
+        <button id="drawBtn">✏️ Draw</button>
+        <button id="eraserBtn">🧽 Eraser</button>
+        <button onclick="undo()">↶ Undo</button>
+        <button onclick="redo()">↷ Redo</button>
+        <button onclick="clearCanvas()">🗑️ Clear</button>
     </div>
 
-    <script>
-        const canvas = document.getElementById('drawingCanvas');
-        const ctx = canvas.getContext('2d');
-        const colorPicker = document.getElementById('colorPicker');
-        const brushSize = document.getElementById('brushSize');
+    <div class="right-tools">
+        <label>Color</label>
+        <input type="color" id="colorPicker" value="#000000">
 
-        let isDrawing = false;
+        <label>Brush</label>
+        <input type="range" id="brushSize" min="1" max="30" value="5">
+    </div>
+</header>
 
-        canvas.addEventListener('mousedown', startDrawing);
-        canvas.addEventListener('mousemove', draw);
-        canvas.addEventListener('mouseup', stopDrawing);
-        canvas.addEventListener('mouseout', stopDrawing);
+<main>
+    <canvas id="drawingCanvas" width="800" height="500"></canvas>
+</main>
 
-        function startDrawing(e) {
-            isDrawing = true;
-            ctx.beginPath();
-            ctx.moveTo(e.offsetX, e.offsetY);
+<footer>
+    <button onclick="saveImage()">💾 Save Image</button>
+</footer>
+
+<script>
+    const canvas = document.getElementById('drawingCanvas');
+    const ctx = canvas.getContext('2d');
+
+    const colorPicker = document.getElementById('colorPicker');
+    const brushSize = document.getElementById('brushSize');
+    const drawBtn = document.getElementById('drawBtn');
+    const eraserBtn = document.getElementById('eraserBtn');
+
+    let isDrawing = false;
+    let isEraser = false;
+    let undoStack = [];
+    let redoStack = [];
+
+    saveState();
+
+    canvas.addEventListener('mousedown', startDrawing);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDrawing);
+    canvas.addEventListener('mouseout', stopDrawing);
+
+    drawBtn.addEventListener('click', () => {
+        isEraser = false;
+        drawBtn.style.background = "linear-gradient(45deg, #ff6b6b, #ffa726)";
+        eraserBtn.style.background = "white";
+        eraserBtn.style.color = "#ff6b6b";
+        drawBtn.style.color = "white";
+    });
+
+    eraserBtn.addEventListener('click', () => {
+        isEraser = true;
+        eraserBtn.style.background = "linear-gradient(45deg, #ff6b6b, #ffa726)";
+        drawBtn.style.background = "white";
+        drawBtn.style.color = "#ff6b6b";
+        eraserBtn.style.color = "white";
+    });
+
+    function startDrawing(e) {
+        isDrawing = true;
+        ctx.beginPath();
+        ctx.moveTo(e.offsetX, e.offsetY);
+    }
+
+    function draw(e) {
+        if (!isDrawing) return;
+        ctx.lineWidth = brushSize.value;
+        ctx.lineCap = 'round';
+        ctx.globalCompositeOperation = isEraser ? 'destination-out' : 'source-over';
+        ctx.strokeStyle = isEraser ? 'rgba(0,0,0,1)' : colorPicker.value;
+        ctx.lineTo(e.offsetX, e.offsetY);
+        ctx.stroke();
+    }
+
+    function stopDrawing() {
+        if (isDrawing) saveState();
+        isDrawing = false;
+    }
+
+    function clearCanvas() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        saveState();
+    }
+
+    function saveState() {
+        undoStack.push(canvas.toDataURL());
+        redoStack = [];
+    }
+
+    function undo() {
+        if (undoStack.length > 1) {
+            redoStack.push(undoStack.pop());
+            const img = new Image();
+            img.src = undoStack[undoStack.length - 1];
+            img.onload = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+            };
         }
+    }
 
-        function draw(e) {
-            if (!isDrawing) return;
-            ctx.lineWidth = brushSize.value;
-            ctx.lineCap = 'round';
-            ctx.strokeStyle = colorPicker.value;
-            ctx.lineTo(e.offsetX, e.offsetY);
-            ctx.stroke();
+    function redo() {
+        if (redoStack.length > 0) {
+            const img = new Image();
+            img.src = redoStack.pop();
+            img.onload = () => {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0);
+                undoStack.push(img.src);
+            };
         }
+    }
 
-        function stopDrawing() {
-            isDrawing = false;
-        }
+    function saveImage() {
+        const link = document.createElement('a');
+        link.download = 'my_drawing.png';
+        link.href = canvas.toDataURL();
+        link.click();
+    }
+</script>
 
-        function clearCanvas() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-    </script>
 </body>
 </html>

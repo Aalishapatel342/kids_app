@@ -58,6 +58,22 @@ button:hover{background:#1d4ed8;}
 {% endfor %}
 <button type="submit">Submit Quiz 🚀</button>
 </form>
+<div style="text-align:center; margin-top:20px;">
+    <button onclick="clearQuiz()" style="background:#ff6b6b; color:white; border:none; padding:10px 20px; border-radius:10px; cursor:pointer;">Clear Quiz</button>
+    <button onclick="backToDashboard()" style="background:#6c757d; color:white; border:none; padding:10px 20px; border-radius:10px; cursor:pointer; margin-left:10px;">Back to Dashboard</button>
+</div>
+<script>
+function clearQuiz() {
+    if (confirm('Are you sure you want to clear the quiz? This will not count as an attempt.')) {
+        window.location.href = '/quiz?clear=1';
+    }
+}
+function backToDashboard() {
+    if (confirm('Are you sure you want to go back to dashboard? This will not count as an attempt.')) {
+        window.location.href = '/dashboard';
+    }
+}
+</script>
 </div>
 
 </body>

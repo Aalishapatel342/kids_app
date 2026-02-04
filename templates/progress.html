@@ -1,187 +1,233 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Progress Report</title>
+    <title>My Progress</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
-        html {
-            height: 100%;
-        }
-
         body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
             margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #87ceeb 0%, #4682b4 100%);
-            color: #333;
-            min-height: 100vh;
+            font-family: 'Comic Sans MS', cursive;
+            background: linear-gradient(135deg, #ffd6e8, #ffc1dd, #ffb6d5);
         }
 
-        /* ===== SIDEBAR STYLE ===== */
         .sidebar {
             position: fixed;
-            left: 0;
-            top: 0;
             width: 220px;
             height: 100%;
-            background: linear-gradient(180deg, #4682b4, #87ceeb);
-            padding-top: 20px;
-            box-shadow: 5px 0 15px rgba(0,0,0,0.2);
-            z-index: 1000;
-        }
-
-        .sidebar .logo {
+            background: linear-gradient(180deg, #000000, #ff6b6b);
             color: white;
-            text-align: center;
-            margin-bottom: 30px;
-            font-size: 22px;
+            padding-top: 20px;
         }
 
-        .sidebar a, .dropbtn {
+        .sidebar a {
             display: block;
             color: white;
             padding: 12px 20px;
             text-decoration: none;
-            font-size: 15px;
-            border: none;
-            background: none;
-            width: 100%;
-            text-align: left;
-            cursor: pointer;
-            transition: 0.3s;
+            font-size: 16px;
         }
 
-        .sidebar a:hover, .dropbtn:hover {
+        .sidebar a:hover {
             background: rgba(255,255,255,0.2);
-            padding-left: 28px;
         }
 
-        .logout {
-            position: absolute;
-            bottom: 20px;
-            width: 100%;
-        }
-
-        .dropdown-content {
-            display: none;
-            background-color: #3b82f6;
-        }
-
-        .dropdown-content a {
-            padding-left: 35px;
-            font-size: 14px;
-        }
-
-        .dropdown:hover .dropdown-content {
-            display: block;
-        }
-
-        /* ===== MAIN CONTENT ===== */
         .main {
             margin-left: 240px;
-            padding: 20px;
+            padding: 30px;
         }
 
-        .topbar {
-            background: rgba(255, 255, 255, 0.9);
-            padding: 20px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+        h1 {
             text-align: center;
+            font-size: 2.4em;
+            color: #ff4757;
         }
 
-        .progress-cards {
+        /* CARDS */
+        .cards {
             display: flex;
-            flex-wrap: wrap;
             justify-content: center;
             gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 35px;
         }
 
         .card {
             background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            min-width: 220px;
             text-align: center;
-            transition: transform 0.3s;
-            border: 2px solid #ff6b6b;
-            min-width: 250px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
         }
 
-        .card:hover {
-            transform: translateY(-5px);
-        }
-
-        .card h3 {
+        .card h2 {
+            font-size: 2.4em;
             color: #ff6b6b;
+        }
+
+        /* CHART CONTAINER */
+        .chart-box {
+            background: white;
+            border-radius: 25px;
+            padding: 25px;
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+            margin-top: 40px;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+            align-items: stretch;
+        }
+
+        .chart-item {
+            background: #fff;
+            border-radius: 20px;
+            padding: 15px;
+            height: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .chart-item h3 {
+            text-align: center;
             margin-bottom: 10px;
-            font-size: 2em;
-        }
-
-        .card p {
-            color: #666;
-            margin-bottom: 20px;
-            font-size: 1.2em;
-        }
-
-        .big-number {
-            font-size: 3em;
-            font-weight: bold;
             color: #ff6b6b;
+        }
+
+        .chart-item canvas {
+            max-height: 230px !important;
         }
     </style>
 </head>
+
 <body>
 
 <!-- SIDEBAR -->
 <div class="sidebar">
-    <h3 class="logo">🧒 MINI CLUB</h3>
-
-    <a href="{{ url_for('kids_dashboard') }}">🏠 Dashboard</a>
+    <h2 style="text-align:center;">🧒 MINI CLUB</h2>
+    <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
     <a href="/activities">🎨 Activities</a>
     <a href="/progress">📊 Progress</a>
-
-    <div class="dropdown">
-        <button class="dropbtn">⚙ Settings ▾</button>
-        <div class="dropdown-content">
-            <a href="{{ url_for('profile') }}">👶 My Profile</a>
-            <a href="/about">ℹ About</a>
-            <a href="/query">❓ Any Query</a>
-        </div>
-    </div>
-
-    <a href="{{ url_for('logout') }}" class="logout">🚪 Logout</a>
+    <a href="/logout">🚪 Logout</a>
 </div>
 
-<!-- Main Content -->
 <div class="main">
 
-    <!-- Top Navbar -->
-    <div class="topbar">
-        <h1>Your Progress Report!</h1>
+    <h1>🚀 Your Learning Journey</h1>
+
+    <!-- STATS -->
+    <div class="cards">
+        <div class="card">
+            <h2>{{ total_coins }}</h2>
+            <p>🪙 Total Coins</p>
+        </div>
+        <div class="card">
+            <h2>{{ total_avg_score }}</h2>
+            <p>⭐ Avg Score</p>
+        </div>
     </div>
 
-    <!-- Progress Cards -->
-    <div class="progress-cards">
+    <!-- CHARTS -->
+    <div class="chart-box">
+        <h2 style="text-align:center;color:#ff4757;">📊 Weekly Progress</h2>
 
-        <div class="card">
-            <h3>📝 Attempts</h3>
-            <p class="big-number">{{ attempts }}</p>
-            <p>Times you took the quiz</p>
+        <div class="charts-container">
+
+            <!-- LINE GRAPH -->
+            <div class="chart-item">
+                <h3>🪙 Coins Earned (Week)</h3>
+                <canvas id="weeklyChart"></canvas>
+            </div>
+
+            <!-- PIE GRAPH -->
+            <div class="chart-item">
+                <h3>🎯 Activity Split</h3>
+                <canvas id="pieChart"></canvas>
+            </div>
+
         </div>
-
-        <div class="card">
-            <h3>🏆 Total Score</h3>
-            <p class="big-number">{{ total }}</p>
-            <p>Points earned overall</p>
-        </div>
-
-        <div class="card">
-            <h3>📊 Average Score</h3>
-            <p class="big-number">{{ avg }}</p>
-            <p>Average points per quiz</p>
-        </div>
-
     </div>
+
 </div>
+
+<script>
+/* LINE CHART */
+new Chart(document.getElementById('weeklyChart'), {
+    type: 'line',
+    data: {
+        labels: {{ days | tojson }},
+        datasets: [{
+            data: {{ stars_data }},
+            borderColor: '#ff6b6b',
+            backgroundColor: 'rgba(255,107,107,0.25)',
+            fill: true,
+            tension: 0.45,
+            pointRadius: 6,
+            pointBackgroundColor: '#ff6b6b',
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: { stepSize: 1 }
+            }
+        }
+    }
+});
+
+/* PIE / DOUGHNUT CHART */
+new Chart(document.getElementById('pieChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['🎯 Quiz', '🧩 Shapes'],
+        datasets: [{
+            data: [{{ quiz_attempts }}, {{ shape_attempts }}],
+            backgroundColor: [
+                'rgba(255,107,107,0.95)',
+                'rgba(0,0,0,0.85)'
+            ],
+            borderWidth: 6,
+            borderColor: '#fff',
+            hoverOffset: 15
+        }]
+    },
+    options: {
+        cutout: '65%',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom',
+                labels: {
+                    font: {
+                        size: 14,
+                        family: 'Comic Sans MS',
+                        weight: 'bold'
+                    },
+                    usePointStyle: true
+                }
+            }
+        },
+        animation: {
+            animateScale: true,
+            duration: 1600,
+            easing: 'easeOutBounce'
+        }
+    }
+});
+</script>
+
 </body>
 </html>

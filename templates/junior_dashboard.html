@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Kids Dashboard</title>
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
     <style>
         html {
             height: 100%;
@@ -27,11 +28,8 @@
             top: 0;
             width: 220px;
             height: 100%;
-            {% if gender == 'male' %}
-            background: linear-gradient(180deg, #4682b4, #87ceeb);
-            {% else %}
-            background: linear-gradient(180deg, #ffe4e1, #ffb6d5);
-            {% endif %}
+            background: linear-gradient(180deg, #000000, #ff6b6b);
+            color: white;
             padding-top: 20px;
             box-shadow: 5px 0 15px rgba(0,0,0,0.2);
             z-index: 1000;
@@ -90,7 +88,8 @@
         }
 
         .topbar {
-            background: rgba(255, 255, 255, 0.9);
+            background: linear-gradient(180deg, #000000, #ff6b6b);
+            color: white;
             padding: 20px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
@@ -163,72 +162,72 @@
 
 <!-- SIDEBAR -->
 <div class="sidebar">
-    <h3 class="logo">🧒 KidZone</h3>
+    <h3 class="logo">🧒 MINI CLUB</h3>
 
-    <a href="/kids-dashboard">🏠 Dashboard</a>
+    <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
     <a href="/activities">🎨 Activities</a>
     <a href="/progress">📊 Progress</a>
 
     <div class="dropdown">
         <button class="dropbtn">⚙ Settings ▾</button>
         <div class="dropdown-content">
-            <a href="/profile">👶 My Profile</a>
+            <a href="{{ url_for('profile') }}">👶 My Profile</a>
             <a href="/about">ℹ About</a>
             <a href="/query">❓ Any Query</a>
         </div>
     </div>
 
-    <a href="/logout" class="logout">🚪 Logout</a>
+    <a href="{{ url_for('logout') }}" class="logout">🚪 Logout</a>
 </div>
 
-<!-- MAIN CONTENT -->
+<!-- Main Content -->
 <div class="main">
 
+    <!-- Top Navbar -->
     <div class="topbar">
-        <h1>Welcome{% if username %}, {{ username }}{% endif %}! 👋</h1>
+        <h1>Welcome to Kids Dashboard{% if username %}, {{ username }}{% endif %}!</h1>
         <input type="text" placeholder="Search activities...">
     </div>
 
+    <!-- Activity Cards -->
     <div class="cards">
-
-        <div class="card">
-            <h3>🧠 Smart Quiz</h3>
-            <p>Test your brain & earn coins</p>
-            <a href="/quiz"><button>Start Quiz</button></a>
-        </div>
-
-        <div class="card">
-            <h3>🔤 Learn Alphabet</h3>
-            <p>A to Z learning for kids</p>
-            <a href="/alphabet"><button>Start</button></a>
-        </div>
-
-        <div class="card">
-            <h3>🔢 Learn Numbers</h3>
-            <p>1 to 20 fun counting</p>
-            <a href="/numbers"><button>Start</button></a>
-        </div>
-
-        <div class="card">
+        <div class="card" data-name="Drawing" data-desc="Color & drawing fun">
             <h3>🎨 Drawing</h3>
             <p>Color & drawing fun</p>
             <a href="/drawing"><button>Start</button></a>
         </div>
 
-        <div class="card">
-            <h3>🧠 Math Games</h3>
+        <div class="card" data-name="Smart Quiz" data-desc="Test your brain & earn coins">
+            <h3>🧠 Smart Quiz</h3>
+            <p>Test your brain & earn coins</p>
+            <a href="/quiz"><button>Start</button></a>
+        </div>
+
+        <div class="card" data-name="Math Games" data-desc="Addition & subtraction">
+            <h3>➕ Math Games</h3>
             <p>Addition & subtraction</p>
             <a href="/math"><button>Start</button></a>
         </div>
 
-        <div class="card">
-            <h3>📖 Word Builder</h3>
+        <div class="card" data-name="Word Builder" data-desc="Spell & learn words">
+            <h3>📝 Word Builder</h3>
             <p>Spell & learn words</p>
             <a href="/words"><button>Start</button></a>
         </div>
+        
+        <div class="card" data-name="Shape Builder" data-desc="Shape Drawing">
+            <h3>🧩 Shape Builder</h3>
+            <p>Build objects using shapes</p>
+            <a href="/shape_builder"><button>Start</button></a>
+        </div>
 
+        <div class="card" data-name="Story Time" data-desc="Listen to fun stories">
+            <h3>📖 Story Time</h3>
+            <p>Listen to fun stories</p>
+            <a href="/story_time"><button>Start</button></a>
+        </div>
+    </div>
     </div>
 </div>
-
 </body>
 </html>
