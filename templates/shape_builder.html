@@ -3,31 +3,109 @@
 <head>
     <meta charset="UTF-8">
     <title>Shape Builder</title>
-
     <link rel="stylesheet" href="{{ url_for('static', filename='css/shape.css') }}">
 </head>
 <body>
+    <div class="container">
+        <header>
+            <h1>🎨 Shape Builder</h1>
+            <div class="header-controls">
+                <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+                <div class="user-info">
+                    <div class="coin-counter">
+                        <i>🪙</i> Coins: <span id="coin-count">0</span>
+                    </div>
+                </div>
+            </div>
+        </header>
 
-<div class="shape-header">
-    <h1>🧩 Shape Builder</h1>
-    <p>Build a <strong>{{ target.name }}</strong></p>
-</div>
+        <div class="game-container">
+            <div class="task-section">
+                <h2>Current Task</h2>
+                <div class="task-card">
+                    <h3 id="task-name">Loading...</h3>
+                    <p id="task-description">Loading...</p>
+                    <div class="target-shapes" id="target-shapes"></div>
+                </div>
+                <div class="instructions">
+                    <h3>📝 Instructions</h3>
+                    <ul>
+                        <li>Drag shapes from the palette to the canvas</li>
+                        <li>Click on shapes to select and modify them</li>
+                        <li>Use controls to change size and rotation</li>
+                        <li>Click "Done" when you think it's correct</li>
+                    </ul>
+                </div>
+            </div>
 
-<div class="shape-toolbar">
-    <button onclick="addShape('circle')">🔵 Circle</button>
-    <button onclick="addShape('square')">🟥 Square</button>
-    <button onclick="addShape('triangle')">🔺 Triangle</button>
-    <button onclick="clearCanvas()">🗑️ Clear</button>
-</div>
+            <div class="workspace-section">
+                <div class="workspace-header">
+                    <h2>Workspace</h2>
+                    <div class="workspace-controls">
+                        <button id="clear-btn" class="btn btn-danger">Clear All</button>
+                        <button id="undo-btn" class="btn btn-secondary">Undo</button>
+                    </div>
+                </div>
+                <div class="workspace">
+    <div id="canvas" class="workspace"></div>
+                    <div class="grid-overlay"></div>
+                </div>
+            </div>
 
-<div id="shapeCanvas">
-</div>
+            <div class="tools-section">
+                <h2>Tools</h2>
+                <div class="shape-palette">
+                    <div class="shape-option" data-type="circle" draggable="true">
+                        <div class="shape-preview circle"></div>
+                        Circle
+                    </div>
+                    <div class="shape-option" data-type="square" draggable="true">
+                        <div class="shape-preview square"></div>
+                        Square
+                    </div>
+                    <div class="shape-option" data-type="triangle" draggable="true">
+                        <div class="shape-preview triangle"></div>
+                        Triangle
+                    </div>
+                    <div class="shape-option" data-type="rectangle" draggable="true">
+                        <div class="shape-preview rectangle"></div>
+                        Rectangle
+                    </div>
+                </div>
 
-<button class="done-btn" onclick="finishWork()">✅ I'm Done</button>
+                <div class="color-palette">
+                    <h3>Colors</h3>
+                    <div class="color-options">
+                        <button class="color-option active" data-color="#FF6B6B" style="background-color: #FF6B6B;"></button>
+                        <button class="color-option" data-color="#4ECDC4" style="background-color: #4ECDC4;"></button>
+                        <button class="color-option" data-color="#45B7D1" style="background-color: #45B7D1;"></button>
+                        <button class="color-option" data-color="#96CEB4" style="background-color: #96CEB4;"></button>
+                        <button class="color-option" data-color="#FFEAA7" style="background-color: #FFEAA7;"></button>
+                        <button class="color-option" data-color="#DDA0DD" style="background-color: #DDA0DD;"></button>
+                    </div>
+                </div>
 
-<script>
-    const TARGET_KEY = "{{ target_key }}";
-</script>
-<script src="{{ url_for('static', filename='js/shape.js') }}"></script>
+                <div class="shape-controls">
+                    <div class="control-group">
+                        <label>Size: <span id="size-value">80px</span></label>
+                        <input type="range" id="size-slider" min="20" max="200" value="80">
+                    </div>
+                    <div class="control-group">
+                        <label>Rotation: <span id="rotation-value">0°</span></label>
+                        <input type="range" id="rotation-slider" min="0" max="360" value="0">
+                    </div>
+                    <div class="action-buttons">
+                        <button id="delete-btn" class="btn btn-danger">Delete Selected</button>
+                        <button id="done-btn" class="btn btn-success">Done</button>
+                        <button id="next-btn" class="btn btn-primary" style="display: none;">Next Task</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="notification" class="notification"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/shape.js') }}"></script>
 </body>
 </html>

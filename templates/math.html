@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Math Games - Number Matching</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        .math-game-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            min-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 15px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .game-header h1 {
+            color: #4CAF50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 12px;
+            background: linear-gradient(135deg, #f1f1f1 0%, #e0e0e0 100%);
+            border-radius: 6px;
+            margin: 15px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50 0%, #45a049 100%);
+            border-radius: 6px;
+            width: 0%;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-text {
+            position: absolute;
+            right: 10px;
+            top: -25px;
+            font-weight: bold;
+            color: #4CAF50;
+            font-size: 0.9em;
+        }
+
+        .score-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .score-display:before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+            animation: shine 3s infinite linear;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .score-item {
+            text-align: center;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .score-item i {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .score-item span {
+            font-size: 1.5em;
+            font-weight: bold;
+            display: block;
+        }
+
+        .score-item div {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-top: 5px;
+        }
+
+        .game-area {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f2ff 100%);
+            border-radius: 15px;
+            flex-grow: 1;
+            overflow-y: auto;
+            max-height: 380px;
+            min-height: 250px;
+            align-content: start;
+            justify-items: center;
+        }
+
+        /* Enhanced Scrollbar */
+        .game-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .game-area::-webkit-scrollbar-track {
+            background: linear-gradient(135deg, #f1f1f1 0%, #e0e0e0 100%);
+            border-radius: 10px;
+        }
+
+        .game-area::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+
+        .game-area::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        }
+
+        .number-card {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            max-width: 120px;
+            height: 140px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .number-card:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #ff6b6b, #ffa8a8);
+            border-radius: 15px 15px 0 0;
+        }
+
+        .number-card:hover {
+            transform: translateY(-5px) rotate(1deg);
+            box-shadow: 0 8px 25px rgba(255, 154, 158, 0.4);
+            border-color: rgba(255, 255, 255, 1);
+        }
+
+        .number-card.selected {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(168, 237, 234, 0.4);
+            z-index: 10;
+        }
+
+        .number-card.correct {
+            background: linear-gradient(135deg, #d299c2 0%, #fef9d7 100%);
+            animation: correct 0.6s ease;
+            border-color: #4CAF50;
+        }
+
+        .number-card.wrong {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            animation: wrong 0.6s ease;
+            border-color: #ff6b6b;
+        }
+
+        @keyframes correct {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes wrong {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+        }
+
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .number-display {
+            font-size: 2.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            font-family: 'Arial', sans-serif;
+        }
+
+        .dots-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            max-width: 90px;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            transition: all 0.2s ease;
+        }
+
+        .match-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            opacity: 0;
+            transform: scale(0);
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(76, 175, 80, 0.4);
+        }
+
+        .number-card.correct .match-badge {
+            opacity: 1;
+            transform: scale(1);
+            animation: badgePop 0.5s ease;
+        }
+
+        @keyframes badgePop {
+            0% { transform: scale(0); }
+            70% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .control-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-shrink: 0;
+            padding: 15px;
+            background: linear-gradient(135deg, rgba(248, 249, 255, 0.9) 0%, rgba(240, 242, 255, 0.9) 100%);
+            border-radius: 15px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 160px;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn:before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .btn:hover:before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(245, 87, 108, 0.4);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .instructions {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 15px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .instructions:before {
+            content: "🎯";
+            position: absolute;
+            font-size: 3em;
+            opacity: 0.1;
+            top: 10px;
+            left: 15px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .instructions h3 {
+            margin-top: 0;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .instructions p {
+            font-size: 1em;
+            opacity: 0.95;
+            line-height: 1.5;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            z-index: 1000;
+            animation: celebration 0.6s ease;
+            min-width: 350px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.2);
+        }
+
+        .celebration:before {
+            content: "";
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            background: linear-gradient(45deg, #667eea, #764ba2, #667eea);
+            z-index: -1;
+            filter: blur(20px);
+            opacity: 0.5;
+        }
+
+        .celebration h2 {
+            margin-top: 0;
+            font-size: 2.2em;
+            margin-bottom: 20px;
+        }
+
+        .celebration .coins-earned {
+            font-size: 1.8em;
+            color: #FFD700;
+            margin: 20px 0;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 1.5em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-btn:hover {
+            transform: scale(1.1) rotate(-10deg);
+            box-shadow: 0 8px 25px rgba(255, 154, 158, 0.5);
+        }
+
+        .timer-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 1em;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .timer {
+            font-size: 1.3em;
+        }
+
+        .streak-container {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: #333;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-size: 0.9em;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 100;
+        }
+
+        .streak-count {
+            font-size: 1.3em;
+            color: #ff4444;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            
+            .math-game-container {
+                padding: 15px;
+                min-height: 95vh;
+            }
+            
+            .game-header h1 {
+                font-size: 2em;
+            }
+            
+            .game-area {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: 10px;
+                padding: 12px;
+                max-height: 350px;
+            }
+            
+            .number-card {
+                max-width: 110px;
+                height: 130px;
+                padding: 12px;
+            }
+            
+            .number-display {
+                font-size: 2em;
+            }
+            
+            .control-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 200px;
+                padding: 10px 20px;
+                font-size: 0.9em;
+                min-width: 140px;
+            }
+            
+            .back-btn,
+            .timer-container,
+            .streak-container {
+                position: relative;
+                top: auto;
+                left: auto;
+                right: auto;
+                margin: 10px auto;
+                display: inline-block;
+                width: auto;
+            }
+            
+            .celebration {
+                min-width: 300px;
+                padding: 25px;
+                margin: 15px;
+            }
+            
+            .score-display {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+            
+            .score-item {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-area {
+                grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+                gap: 8px;
+            }
+            
+            .number-card {
+                max-width: 95px;
+                height: 115px;
+                padding: 10px;
+            }
+            
+            .number-display {
+                font-size: 1.8em;
+            }
+            
+            .dots-container {
+                max-width: 70px;
+                padding: 6px;
+                gap: 4px;
+            }
+            
+            .dot {
+                width: 10px;
+                height: 10px;
+            }
+            
+            .instructions {
+                padding: 15px;
+            }
+            
+            .instructions h3 {
+                font-size: 1.3em;
+            }
+            
+            .instructions p {
+                font-size: 0.9em;
+            }
+        }
+
+        /* Confetti animation */
+        @keyframes confetti {
+            0% { 
+                transform: translateY(-100px) rotate(0deg) translateX(0); 
+                opacity: 1;
+            }
+            100% { 
+                transform: translateY(1000px) rotate(720deg) translateX(var(--translate-x)); 
+                opacity: 0;
+            }
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: var(--confetti-color);
+            top: -20px;
+            opacity: 0.9;
+            animation: confetti 3s linear forwards;
+            z-index: 999;
+            border-radius: 50%;
+        }
+
+        /* Remove any footer styles */
+        footer {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <button class="back-btn" onclick="goBack()">
+        <i class="fas fa-arrow-left"></i>
+    </button>
+
+    <div class="timer-container">
+        <i class="fas fa-clock"></i>
+        <span>Time: </span>
+        <span class="timer" id="timer">60</span>s
+    </div>
+
+    <div class="streak-container">
+        <i class="fas fa-fire"></i>
+        <span>Streak: </span>
+        <span class="streak-count" id="streak">0</span>
+    </div>
+
+    <div class="math-game-container">
+        <div class="game-header">
+            <h1>Number Matching Challenge</h1>
+            <div class="progress-container">
+                <div class="progress-bar" id="progressBar"></div>
+                <div class="progress-text" id="progressText">0%</div>
+            </div>
+        </div>
+
+        <div class="instructions">
+            <h3><i class="fas fa-gamepad"></i> How to Play</h3>
+            <p>Match numbers with their visual representations! Click cards to reveal them and find matching pairs. Complete before time runs out to earn bonus coins! ⏰</p>
+        </div>
+
+        <div class="score-display">
+            <div class="score-item">
+                <i class="fas fa-star"></i>
+                <span id="score">0</span>
+                <div>SCORE</div>
+            </div>
+            <div class="score-item">
+                <i class="fas fa-chart-line"></i>
+                <span id="level">1</span>
+                <div>LEVEL</div>
+            </div>
+            <div class="score-item">
+                <i class="fas fa-coins"></i>
+                <span id="coins">0</span>
+                <div>COINS</div>
+            </div>
+        </div>
+
+        <div class="game-area" id="gameArea">
+            <!-- Game cards will be generated here -->
+        </div>
+
+        <div class="control-buttons">
+            <button class="btn btn-primary" onclick="startGame()">
+                <i class="fas fa-play"></i> Start New Game
+            </button>
+            <button class="btn btn-secondary" onclick="resetGame()">
+                <i class="fas fa-redo"></i> Reset Game
+            </button>
+            <button class="btn btn-primary" onclick="showHint()" id="hintBtn">
+                <i class="fas fa-lightbulb"></i> Hint (3)
+            </button>
+        </div>
+    </div>
+
+    <!-- Celebration Modal -->
+    <div id="celebrationModal" class="celebration" style="display: none;">
+        <h2><i class="fas fa-trophy"></i> Level Complete!</h2>
+        <p>Amazing job! You're getting better! 🎯</p>
+        <div class="coins-earned">+<span id="earnedCoins">10</span> <i class="fas fa-coins"></i></div>
+        <p>Bonus: <span id="bonusCoins">0</span> coins for time left!</p>
+        <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+            <button class="btn btn-primary" onclick="nextLevel()">
+                <i class="fas fa-forward"></i> Next Level
+            </button>
+            <button class="btn btn-secondary" onclick="playAgain()">
+                <i class="fas fa-play"></i> Play Again
+            </button>
+        </div>
+    </div>
+
+    <script>
+        let gameCards = [];
+        let selectedCards = [];
+        let matchedPairs = 0;
+        let currentLevel = 1;
+        let score = 0;
+        let coins = 0;
+        let canClick = true;
+        let gameTimer;
+        let timeLeft = 60;
+        let streak = 0;
+        let hintsLeft = 3;
+        let gameStarted = false;
+
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDisplay();
+            startGame();
+        });
+
+        function startGame() {
+            resetGame();
+            generateCards();
+            renderCards();
+            startTimer();
+            gameStarted = true;
+            updateProgress();
+        }
+
+        function resetGame() {
+            gameCards = [];
+            selectedCards = [];
+            matchedPairs = 0;
+            canClick = true;
+            timeLeft = 60 + (currentLevel * 5);
+            document.getElementById('timer').textContent = timeLeft;
+            document.getElementById('celebrationModal').style.display = 'none';
+            clearInterval(gameTimer);
+            updateProgress();
+        }
+
+        function startTimer() {
+            clearInterval(gameTimer);
+            gameTimer = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    document.getElementById('timer').textContent = timeLeft;
+                } else {
+                    clearInterval(gameTimer);
+                    gameOver();
+                }
+            }, 1000);
+        }
+
+        function generateCards() {
+            const numbers = [];
+            const pairs = currentLevel + 2;
+
+            // Generate number pairs
+            for (let i = 1; i <= pairs; i++) {
+                numbers.push(i, i);
+            }
+
+            // Add bonus cards for higher levels
+            if (currentLevel > 3) {
+                numbers.push(pairs + 1, pairs + 1);
+            }
+
+            // Shuffle the numbers
+            gameCards = shuffleArray(numbers);
+        }
+
+        function renderCards() {
+            const gameArea = document.getElementById('gameArea');
+            gameArea.innerHTML = '';
+
+            gameCards.forEach((number, index) => {
+                const card = document.createElement('div');
+                card.className = 'number-card';
+                card.dataset.index = index;
+                card.dataset.number = number;
+                card.onclick = () => selectCard(card);
+
+                const cardContent = document.createElement('div');
+                cardContent.className = 'card-content';
+
+                // Create number display
+                const numberDisplay = document.createElement('div');
+                numberDisplay.className = 'number-display';
+                numberDisplay.textContent = number;
+                cardContent.appendChild(numberDisplay);
+
+                // Create dots representation
+                const dotsContainer = document.createElement('div');
+                dotsContainer.className = 'dots-container';
+
+                for (let i = 0; i < number; i++) {
+                    const dot = document.createElement('div');
+                    dot.className = 'dot';
+                    dotsContainer.appendChild(dot);
+                }
+
+                cardContent.appendChild(dotsContainer);
+
+                // Create match badge
+                const matchBadge = document.createElement('div');
+                matchBadge.className = 'match-badge';
+                matchBadge.innerHTML = '<i class="fas fa-check"></i>';
+                card.appendChild(matchBadge);
+
+                card.appendChild(cardContent);
+                gameArea.appendChild(card);
+            });
+        }
+
+        function selectCard(card) {
+            if (!canClick || !gameStarted || card.classList.contains('selected') || card.classList.contains('correct')) {
+                return;
+            }
+
+            card.classList.add('selected');
+            selectedCards.push(card);
+
+            if (selectedCards.length === 2) {
+                canClick = false;
+                checkMatch();
+            }
+        }
+
+        function checkMatch() {
+            const [card1, card2] = selectedCards;
+
+            if (card1.dataset.number === card2.dataset.number) {
+                // Match found
+                streak++;
+                if (streak > 3) {
+                    score += 5; // Bonus for streak
+                }
+                
+                setTimeout(() => {
+                    card1.classList.add('correct');
+                    card2.classList.add('correct');
+                    card1.classList.remove('selected');
+                    card2.classList.remove('selected');
+
+                    matchedPairs++;
+                    score += 10 + Math.floor(currentLevel * 1.5);
+                    updateDisplay();
+                    updateProgress();
+
+                    if (matchedPairs === gameCards.length / 2) {
+                        levelComplete();
+                    } else {
+                        selectedCards = [];
+                        canClick = true;
+                    }
+                }, 600);
+            } else {
+                // No match
+                streak = 0;
+                setTimeout(() => {
+                    card1.classList.add('wrong');
+                    card2.classList.add('wrong');
+
+                    setTimeout(() => {
+                        card1.classList.remove('selected', 'wrong');
+                        card2.classList.remove('selected', 'wrong');
+                        selectedCards = [];
+                        canClick = true;
+                    }, 600);
+                }, 600);
+            }
+            
+            document.getElementById('streak').textContent = streak;
+        }
+
+        function updateProgress() {
+            const totalPairs = gameCards.length / 2;
+            const progress = (matchedPairs / totalPairs) * 100;
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            
+            progressBar.style.width = progress + '%';
+            progressText.textContent = Math.round(progress) + '%';
+        }
+
+        function levelComplete() {
+            clearInterval(gameTimer);
+
+            // Create confetti effect
+            createConfetti();
+
+            const bonusCoins = timeLeft * 5;
+            coins += 10 + bonusCoins;
+
+            document.getElementById('earnedCoins').textContent = 10;
+            document.getElementById('bonusCoins').textContent = bonusCoins;
+            document.getElementById('celebrationModal').style.display = 'block';
+            updateDisplay();
+        }
+
+        function gameOver() {
+            alert('Time\'s up! Game Over. Your score: ' + score);
+            resetGame();
+        }
+
+        function nextLevel() {
+            currentLevel++;
+            streak = Math.floor(streak / 2); // Reduce streak for next level
+            coins += 10; // Award 10 coins for completing the level
+            updateDisplay();
+            document.getElementById('celebrationModal').style.display = 'none';
+            startGame();
+        }
+
+        function playAgain() {
+            document.getElementById('celebrationModal').style.display = 'none';
+            startGame();
+        }
+
+        function showHint() {
+            if (hintsLeft > 0 && gameStarted) {
+                hintsLeft--;
+                document.getElementById('hintBtn').innerHTML = `<i class="fas fa-lightbulb"></i> Hint (${hintsLeft})`;
+                
+                // Find and highlight two matching cards
+                const unmatchedCards = Array.from(document.querySelectorAll('.number-card:not(.correct)'));
+                const matches = {};
+                
+                unmatchedCards.forEach(card => {
+                    const num = card.dataset.number;
+                    if (!matches[num]) {
+                        matches[num] = [];
+                    }
+                    matches[num].push(card);
+                });
+
+                // Find a pair to reveal
+                for (const num in matches) {
+                    if (matches[num].length >= 2) {
+                        const [card1, card2] = matches[num];
+                        
+                        // Briefly highlight the cards
+                        card1.style.boxShadow = '0 0 20px gold, 0 0 30px gold';
+                        card2.style.boxShadow = '0 0 20px gold, 0 0 30px gold';
+                        card1.style.zIndex = '1000';
+                        card2.style.zIndex = '1000';
+                        
+                        setTimeout(() => {
+                            card1.style.boxShadow = '';
+                            card2.style.boxShadow = '';
+                            card1.style.zIndex = '';
+                            card2.style.zIndex = '';
+                        }, 1500);
+                        
+                        break;
+                    }
+                }
+            }
+        }
+
+        function updateDisplay() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('level').textContent = currentLevel;
+            document.getElementById('coins').textContent = coins;
+            document.getElementById('streak').textContent = streak;
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#fab1a0', '#a29bfe', '#fd79a8'];
+            
+            for (let i = 0; i < 100; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = Math.random() * 8 + 5 + 'px';
+                confetti.style.height = Math.random() * 8 + 5 + 'px';
+                confetti.style.animationDuration = Math.random() * 2 + 2 + 's';
+                confetti.style.setProperty('--confetti-color', confetti.style.background);
+                confetti.style.setProperty('--translate-x', (Math.random() * 100 - 50) + 'px');
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 3000);
+            }
+        }
+
+        function goBack() {
+            if (confirm('Are you sure you want to leave? Your progress will be saved.')) {
+                window.location.href = '/dashboard';
+            }
+        }
+    </script>
+</body>
+</html>

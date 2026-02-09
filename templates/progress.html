@@ -1,116 +1,259 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>My Progress</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        body {
+        @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&display=swap');
+
+        html, body {
+            height: 100%;
             margin: 0;
-            font-family: 'Comic Sans MS', cursive;
-            background: linear-gradient(135deg, #ffd6e8, #ffc1dd, #ffb6d5);
         }
 
-        .sidebar {
-            position: fixed;
-            width: 220px;
+        body {
+            font-family: 'Baloo 2', cursive;
+            background: linear-gradient(135deg, #ffd6e8, #c3f0ff, #fff1c1);
+            background-size: 300% 300%;
+            animation: bgMove 18s ease infinite;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @keyframes bgMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Cloud Effects */
+        .cloud {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+            animation: floatCloud 20s linear infinite;
+        }
+
+        .cloud::before {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            top: -50%;
+            left: 20%;
+            width: 60%;
             height: 100%;
-            background: linear-gradient(180deg, #000000, #ff6b6b);
-            color: white;
-            padding-top: 20px;
+        }
+
+        .cloud::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            top: -30%;
+            right: 20%;
+            width: 40%;
+            height: 80%;
+        }
+
+        .cloud1 {
+            width: 120px;
+            height: 60px;
+            top: 10%;
+            left: -150px;
+            animation-delay: 0s;
+        }
+
+        .cloud2 {
+            width: 100px;
+            height: 50px;
+            top: 30%;
+            left: -150px;
+            animation-delay: 8s;
+        }
+
+        .cloud3 {
+            width: 140px;
+            height: 70px;
+            top: 50%;
+            left: -150px;
+            animation-delay: 16s;
+        }
+
+        .cloud4 {
+            width: 90px;
+            height: 45px;
+            top: 70%;
+            left: -150px;
+            animation-delay: 24s;
+        }
+
+        @keyframes floatCloud {
+            0% { transform: translateX(-150px); }
+            100% { transform: translateX(calc(100vw + 150px)); }
+        }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: 260px;
+            background: #ffffff;
+            padding: 30px 20px;
+            box-shadow: 6px 0 25px rgba(0,0,0,0.1);
+            border-radius: 0 30px 30px 0;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            color: #ff7a00;
+            font-weight: 700;
         }
 
         .sidebar a {
-            display: block;
-            color: white;
-            padding: 12px 20px;
+            background: #f5f7ff;
+            margin-bottom: 14px;
+            padding: 14px 20px;
+            border-radius: 18px;
+            color: #333;
             text-decoration: none;
             font-size: 16px;
+            transition: all 0.3s ease;
         }
 
         .sidebar a:hover {
-            background: rgba(255,255,255,0.2);
+            background: #ffecb3;
+            transform: translateX(6px) scale(1.03);
+            box-shadow: 0 8px 20px rgba(255, 183, 77, 0.4);
         }
 
+        /* ===== MAIN ===== */
         .main {
-            margin-left: 240px;
+            flex: 1;
             padding: 30px;
+            overflow-y: auto;
         }
 
         h1 {
             text-align: center;
-            font-size: 2.4em;
-            color: #ff4757;
-        }
-
-        /* CARDS */
-        .cards {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
+            font-size: 2.6em;
+            color: #ff7a00;
             margin-bottom: 35px;
         }
 
+        /* ===== CARDS ===== */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+            margin-bottom: 45px;
+        }
+
         .card {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            min-width: 220px;
+            background: #ffffff;
+            padding: 30px 25px;
+            border-radius: 35px;
             text-align: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 14px 30px rgba(0,0,0,0.15);
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-12px) rotate(-1deg);
         }
 
         .card h2 {
-            font-size: 2.4em;
-            color: #ff6b6b;
+            font-size: 2.6em;
+            margin: 0;
+            color: #3f51b5;
         }
 
-        /* CHART CONTAINER */
+        .card p {
+            margin-top: 8px;
+            font-size: 1.05em;
+            color: #555;
+        }
+
+        /* ===== CHART BOX ===== */
         .chart-box {
-            background: white;
-            border-radius: 25px;
-            padding: 25px;
-            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
-            margin-top: 40px;
+            background: #ffffff;
+            border-radius: 35px;
+            padding: 30px;
+            box-shadow: 0 14px 30px rgba(0,0,0,0.15);
+        }
+
+        .chart-box h2 {
+            text-align: center;
+            color: #ff7a00;
+            margin-bottom: 25px;
         }
 
         .charts-container {
             display: grid;
             grid-template-columns: 2fr 1fr;
             gap: 25px;
-            align-items: stretch;
         }
 
         .chart-item {
-            background: #fff;
-            border-radius: 20px;
-            padding: 15px;
-            height: 320px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            background: #ffffff;
+            border-radius: 35px;
+            padding: 18px;
+            height: 330px;
+            box-shadow: 0 14px 30px rgba(0,0,0,0.15);
+            transition: transform 0.4s ease;
+        }
+
+        .chart-item:hover {
+            transform: translateY(-12px) rotate(-1deg);
         }
 
         .chart-item h3 {
             text-align: center;
-            margin-bottom: 10px;
-            color: #ff6b6b;
+            margin-bottom: 12px;
+            color: #3f51b5;
         }
 
         .chart-item canvas {
-            max-height: 230px !important;
+            max-height: 240px !important;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media(max-width: 900px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            .main {
+                margin-left: 0;
+            }
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
         }
     </style>
 </head>
 
 <body>
 
+<!-- Cloud Effects -->
+<div class="cloud cloud1"></div>
+<div class="cloud cloud2"></div>
+<div class="cloud cloud3"></div>
+<div class="cloud cloud4"></div>
+
 <!-- SIDEBAR -->
 <div class="sidebar">
-    <h2 style="text-align:center;">🧒 MINI CLUB</h2>
+    <h2>🧒 MINI CLUB</h2>
     <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
-    <a href="/activities">🎨 Activities</a>
+    <a href="{{ url_for('dashboard') }}">🎨 Activities</a>
     <a href="/progress">📊 Progress</a>
     <a href="/logout">🚪 Logout</a>
 </div>
@@ -127,47 +270,46 @@
         </div>
         <div class="card">
             <h2>{{ total_avg_score }}</h2>
-            <p>⭐ Avg Score</p>
+            <p>⭐ Average Score</p>
+        </div>
+        <div class="card">
+            <h2>{{ performance_level }}</h2>
+            <p>🎯 Performance Level</p>
         </div>
     </div>
 
     <!-- CHARTS -->
     <div class="chart-box">
-        <h2 style="text-align:center;color:#ff4757;">📊 Weekly Progress</h2>
+        <h2>📊 Weekly Progress</h2>
 
         <div class="charts-container">
-
-            <!-- LINE GRAPH -->
             <div class="chart-item">
-                <h3>🪙 Coins Earned (Week)</h3>
+                <h3>🪙 Coins Earned</h3>
                 <canvas id="weeklyChart"></canvas>
             </div>
 
-            <!-- PIE GRAPH -->
             <div class="chart-item">
                 <h3>🎯 Activity Split</h3>
                 <canvas id="pieChart"></canvas>
             </div>
-
         </div>
     </div>
 
 </div>
 
 <script>
-/* LINE CHART */
 new Chart(document.getElementById('weeklyChart'), {
     type: 'line',
     data: {
         labels: {{ days | tojson }},
         datasets: [{
             data: {{ stars_data }},
-            borderColor: '#ff6b6b',
-            backgroundColor: 'rgba(255,107,107,0.25)',
+            borderColor: '#ff6b9f',
+            backgroundColor: 'rgba(255,107,159,0.3)',
             fill: true,
             tension: 0.45,
             pointRadius: 6,
-            pointBackgroundColor: '#ff6b6b',
+            pointBackgroundColor: '#ff6b9f',
             pointBorderColor: '#fff',
             pointBorderWidth: 2
         }]
@@ -175,29 +317,18 @@ new Chart(document.getElementById('weeklyChart'), {
     options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: {
-            legend: { display: false }
-        },
-        scales: {
-            y: {
-                beginAtZero: true,
-                ticks: { stepSize: 1 }
-            }
-        }
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true } }
     }
 });
 
-/* PIE / DOUGHNUT CHART */
 new Chart(document.getElementById('pieChart'), {
     type: 'doughnut',
     data: {
-        labels: ['🎯 Quiz', '🧩 Shapes'],
+        labels: ['🎯 Quiz', '🧩 Shapes', '🧮 Math'],
         datasets: [{
-            data: [{{ quiz_attempts }}, {{ shape_attempts }}],
-            backgroundColor: [
-                'rgba(255,107,107,0.95)',
-                'rgba(0,0,0,0.85)'
-            ],
+            data: [{{ quiz_attempts }}, {{ shape_attempts }}, {{ math_attempts }}],
+            backgroundColor: ['#ff6b9f', '#1f1f2e', '#4CAF50'],
             borderWidth: 6,
             borderColor: '#fff',
             hoverOffset: 15
@@ -205,29 +336,14 @@ new Chart(document.getElementById('pieChart'), {
     },
     options: {
         cutout: '65%',
-        responsive: true,
-        maintainAspectRatio: false,
         plugins: {
             legend: {
                 position: 'bottom',
-                labels: {
-                    font: {
-                        size: 14,
-                        family: 'Comic Sans MS',
-                        weight: 'bold'
-                    },
-                    usePointStyle: true
-                }
+                labels: { font: { size: 14, weight: 'bold' } }
             }
-        },
-        animation: {
-            animateScale: true,
-            duration: 1600,
-            easing: 'easeOutBounce'
         }
     }
 });
 </script>
-
 </body>
 </html>

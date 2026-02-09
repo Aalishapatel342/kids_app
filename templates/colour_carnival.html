@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Carnival</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600&display=swap" rel="stylesheet">
+<style>
+body {
+    margin: 0;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #ffd6e8, #c3f0ff, #fff1c1);
+    background-size: 300% 300%;
+    animation: bgMove 18s ease infinite;
+    font-family: 'Baloo 2', cursive;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+@keyframes bgMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.title {
+    font-size: 3rem;
+    color: #4f46e5;
+    margin-bottom: 2rem;
+    text-align: center;
+    text-shadow: 3px 3px 0 #fbbf24;
+    animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.card-grid {
+    position: relative;
+    width: 600px;
+    height: 600px;
+    margin: 0 auto;
+}
+
+.card {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    transition: 
+        top 1s ease,
+        left 1s ease,
+        transform 0.8s ease;
+    cursor: pointer;
+    transform-style: preserve-3d;
+}
+
+.card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.card.flip .card-inner {
+    transform: rotateY(180deg);
+}
+
+.card-face,
+.card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backface-visibility: hidden;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+.card-back {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    font-size: 2.5rem;
+    font-weight: bold;
+}
+
+.card-face {
+    background-color: white;
+    color: white;
+    font-size: 1.8rem;
+    transform: rotateY(180deg);
+    flex-direction: column;
+    text-align: center;
+    padding: 10px;
+    font-weight: bold;
+}
+
+.color-name {
+    font-size: 1.4rem;
+    margin-top: 5px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.instructions {
+    margin-top: 2rem;
+    font-size: 1.5rem;
+    color: #7c3aed;
+    text-align: center;
+    padding: 10px 20px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 15px;
+}
+
+.emoji {
+    font-size: 2rem;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg) translateX(200px) rotate(0deg); }
+    100% { transform: rotate(360deg) translateX(200px) rotate(-360deg); }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+    <h1 class="title">🎨 Color Roulette 🎡</h1>
+    
+    <div class="card-grid" id="cardGrid"></div>
+
+</div>
+
+<script src="/static/js/colour.js"></script>
+</body>
+</html>

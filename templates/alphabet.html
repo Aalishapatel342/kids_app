@@ -1,11 +1,207 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Alphabet Learning</title>
+<meta charset="UTF-8">
+<title>Ocean ABC – Kids Learning</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Baloo 2', cursive;
+    min-height: 100vh;
+    overflow-x: hidden;
+    background: linear-gradient(135deg, #ffd6e8, #c3f0ff, #fff1c1);
+    background-size: 300% 300%;
+    animation: bgMove 18s ease infinite;
+}
+
+@keyframes bgMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+/* ---------- BACKGROUND BUBBLES ---------- */
+.bubbles {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.bubbles span {
+    position: absolute;
+    bottom: -120px;
+    background: rgba(255,255,255,0.22);
+    border-radius: 50%;
+    animation: rise 26s linear infinite;
+}
+
+@keyframes rise {
+    0% {
+        transform: translateY(0) scale(0.8);
+        opacity: 0;
+    }
+    10% { opacity: 0.55; }
+    100% {
+        transform: translateY(-130vh) scale(1.3);
+        opacity: 0;
+    }
+}
+
+/* ---------- HEADER ---------- */
+header {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 25px 30px;
+    background: #ffffff;
+    border-radius: 30px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
+    margin: 30px auto;
+    max-width: 600px;
+}
+
+header h1 {
+    margin: 0 0 15px;
+    font-size: 28px;
+    color: #ff7a00;
+}
+
+header p {
+    font-size: 15px;
+    color: #555;
+    margin: 0;
+}
+
+/* ---------- GRID ---------- */
+.alphabet-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(95px, 1fr));
+    gap: 20px;
+    padding: 25px;
+    max-width: 960px;
+    margin: auto;
+}
+
+/* ---------- CARD ---------- */
+.card {
+    position: relative;
+    height: 125px;
+    border-radius: 35px;
+    background: #ffffff;
+    box-shadow: 0 14px 30px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.6rem;
+    font-weight: 700;
+    color: #3f51b5;
+    cursor: pointer;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-12px) rotate(-1deg);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+
+.card:active {
+    transform: scale(0.95);
+}
+
+/* ---------- CLICK RIPPLE ---------- */
+.bubble {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.85);
+    animation: ripple 0.7s ease-out forwards;
+    pointer-events: none;
+}
+
+@keyframes ripple {
+    from { transform: scale(0.3); opacity: 1; }
+    to { transform: scale(2.5); opacity: 0; }
+}
+</style>
 </head>
+
 <body>
-    <h1>🔤 Learn A to Z</h1>
-    <p>A B C D E F G...</p>
-    <a href="/dashboard">⬅ Back to Dashboard</a>
+
+<!-- Background Bubbles -->
+<div class="bubbles">
+    <span style="left:6%;  width:28px; height:28px; animation-duration:24s;"></span>
+    <span style="left:18%; width:32px; height:32px; animation-duration:28s;"></span>
+    <span style="left:32%; width:30px; height:30px; animation-duration:26s;"></span>
+    <span style="left:48%; width:36px; height:36px; animation-duration:30s;"></span>
+    <span style="left:62%; width:29px; height:29px; animation-duration:25s;"></span>
+    <span style="left:78%; width:34px; height:34px; animation-duration:29s;"></span>
+    <span style="left:90%; width:31px; height:31px; animation-duration:27s;"></span>
+</div>
+
+<header>
+    <h1>Alphabet Learning</h1>
+    <p>Tap a letter to hear the sound</p>
+</header>
+
+<div class="alphabet-grid" id="alphabetGrid"></div>
+
+<script>
+const grid = document.getElementById("alphabetGrid");
+const colors = ['#ff7a00', '#3f51b5', '#4caf50', '#ff5722', '#9c27b0', '#00bcd4', '#ffc107', '#795548', '#607d8b', '#e91e63'];
+
+// Create A–Z
+for (let i = 65; i <= 90; i++) {
+    const letter = String.fromCharCode(i);
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const span = document.createElement("span");
+    span.textContent = letter;
+    span.style.color = colors[(i - 65) % colors.length];
+    card.appendChild(span);
+
+    card.addEventListener("click", (e) => {
+        speak(letter);
+        bubbleEffect(e, card);
+    });
+
+    grid.appendChild(card);
+}
+
+// Speech
+function speak(letter) {
+    window.speechSynthesis.cancel();
+    const msg = new SpeechSynthesisUtterance(letter);
+    msg.lang = "en-US";
+    msg.rate = 0.8;
+    msg.pitch = 1.1;
+    window.speechSynthesis.speak(msg);
+}
+
+// Click ripple
+function bubbleEffect(event, card) {
+    const bubble = document.createElement("span");
+    bubble.className = "bubble";
+
+    const rect = card.getBoundingClientRect();
+    bubble.style.left = (event.clientX - rect.left - 9) + "px";
+    bubble.style.top = (event.clientY - rect.top - 9) + "px";
+
+    card.appendChild(bubble);
+    setTimeout(() => bubble.remove(), 700);
+}
+</script>
+
 </body>
 </html>
