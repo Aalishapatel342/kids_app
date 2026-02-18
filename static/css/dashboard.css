@@ -9,43 +9,135 @@ html, body {
 
 body {
     font-family: 'Baloo 2', cursive;
-    background: linear-gradient(135deg, #ffd6e8, #c3f0ff, #fff1c1);
-    background-size: 300% 300%;
-    animation: bgMove 18s ease infinite;
+    /* Soft blue-pink gradient background like login page */
+    background: linear-gradient(135deg, #b3e5fc 0%, #f8bbd9 100%);
     display: flex;
     overflow: hidden;
+    position: relative;
 }
 
-@keyframes bgMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+/* Floating background shapes like login page */
+.floating-shapes {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.shape {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(5px);
+    animation: float 20s infinite linear;
+}
+
+.shape-1 {
+    width: 120px;
+    height: 120px;
+    top: 10%;
+    left: 5%;
+    background: linear-gradient(45deg, #ffcdd2, #f8bbd9);
+    animation-delay: 0s;
+}
+
+.shape-2 {
+    width: 180px;
+    height: 180px;
+    top: 70%;
+    left: 85%;
+    background: linear-gradient(45deg, #bbdefb, #b3e5fc);
+    animation-delay: -5s;
+}
+
+.shape-3 {
+    width: 90px;
+    height: 90px;
+    top: 20%;
+    left: 90%;
+    background: linear-gradient(45deg, #c8e6c9, #dcedc1);
+    animation-delay: -10s;
+}
+
+.shape-4 {
+    width: 150px;
+    height: 150px;
+    top: 85%;
+    left: 10%;
+    background: linear-gradient(45deg, #ffecb3, #fff9c4);
+    animation-delay: -7s;
+}
+
+.shape-5 {
+    width: 100px;
+    height: 100px;
+    top: 60%;
+    left: 20%;
+    background: linear-gradient(45deg, #e1bee7, #f3e5f5);
+    animation-delay: -12s;
+}
+
+.shape-6 {
+    width: 80px;
+    height: 80px;
+    top: 30%;
+    left: 75%;
+    background: linear-gradient(45deg, #b2ebf2, #b2dfdb);
+    animation-delay: -15s;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg) scale(1);
+        opacity: 0.8;
+    }
+    25% {
+        transform: translateY(-40px) rotate(90deg) scale(1.1);
+    }
+    50% {
+        transform: translateY(0) rotate(180deg) scale(1);
+        opacity: 0.6;
+    }
+    75% {
+        transform: translateY(40px) rotate(270deg) scale(0.9);
+    }
 }
 
 /* 🧩 SIDEBAR */
 .sidebar {
     width: 260px;
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.95);
     padding: 30px 20px;
     box-shadow: 6px 0 25px rgba(0,0,0,0.1);
     border-radius: 0 30px 30px 0;
     display: flex;
     flex-direction: column;
     position: relative;
+    z-index: 2;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .logo {
     font-size: 26px;
     font-weight: 700;
     text-align: center;
-    color: #ff7a00;
+    background: linear-gradient(135deg, #4a00e0 0%, #8e2de2 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
     margin-bottom: 40px;
+    font-family: 'Comic Neue', cursive;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 /* Sidebar Links */
 .sidebar a,
 .dropbtn {
-    background: #f5f7ff;
+    background: rgba(255, 255, 255, 0.8);
     margin-bottom: 14px;
     padding: 14px 20px;
     border-radius: 18px;
@@ -55,26 +147,30 @@ body {
     border: none;
     cursor: pointer;
     transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .sidebar a:hover,
 .dropbtn:hover {
-    background: #ffecb3;
+    background: rgba(142, 45, 226, 0.1);
     transform: translateX(6px) scale(1.03);
-    box-shadow: 0 8px 20px rgba(255, 183, 77, 0.4);
+    box-shadow: 0 8px 20px rgba(142, 45, 226, 0.2);
+    color: #8e2de2;
 }
 
 /* Dropdown */
 .dropdown-content {
     display: none;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 14px;
     margin-top: 6px;
     padding: 8px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .dropdown-content a {
-    background: #f1f5ff;
+    background: rgba(241, 245, 255, 0.8);
     font-size: 14px;
     margin-bottom: 6px;
 }
@@ -86,8 +182,9 @@ body {
 /* Logout */
 .logout {
     margin-top: auto;
-    background: #ffe0e0 !important;
+    background: rgba(255, 224, 224, 0.8) !important;
     color: #d32f2f !important;
+    border: 1px solid rgba(211, 47, 47, 0.2) !important;
 }
 
 /* 🏡 MAIN CONTENT */
@@ -95,34 +192,44 @@ body {
     flex: 1;
     padding: 30px;
     overflow-y: auto;
+    z-index: 2;
+    position: relative;
 }
 
 /* 🔝 TOP BAR */
 .topbar {
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.95);
     padding: 25px 30px;
     border-radius: 30px;
     box-shadow: 0 12px 30px rgba(0,0,0,0.12);
     margin-bottom: 30px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .topbar h1 {
     margin: 0 0 15px;
     font-size: 28px;
-    color: #ff7a00;
+    background: linear-gradient(135deg, #4a00e0 0%, #8e2de2 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 .topbar input {
     width: 100%;
     padding: 14px 20px;
     border-radius: 25px;
-    border: 2px solid #ffd180;
+    border: 2px solid rgba(142, 45, 226, 0.3);
     font-size: 15px;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
 }
 
 .topbar input:focus {
     outline: none;
-    border-color: #ff9800;
+    border-color: #8e2de2;
+    box-shadow: 0 5px 15px rgba(142, 45, 226, 0.2);
 }
 
 /* 🎮 ACTIVITY CARDS */
@@ -133,7 +240,7 @@ body {
 }
 
 .card {
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.95);
     padding: 30px 25px;
     border-radius: 35px;
     text-align: center;
@@ -141,16 +248,27 @@ body {
     transition: transform 0.4s ease;
     position: relative;
     min-height: 200px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .card:hover {
-    transform: translateY(-12px) rotate(-1deg);
+    transform: translateY(-12px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.98);
 }
 
 .card h3 {
     font-size: 22px;
     color: #3f51b5;
     margin-bottom: 10px;
+}
+
+.card-text {
+    background: linear-gradient(135deg, #b3e5fc, #f8bbd9);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 .card p {
@@ -161,7 +279,7 @@ body {
 
 /* 🚀 BUTTON */
 .card button {
-    background: linear-gradient(135deg, #ff9800, #ff5722);
+    background: linear-gradient(135deg, #4a00e0 0%, #8e2de2 100%);
     color: #fff;
     border: none;
     padding: 12px 30px;
@@ -169,11 +287,28 @@ body {
     font-size: 15px;
     cursor: pointer;
     transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.card button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.7s ease;
+}
+
+.card button:hover::before {
+    left: 100%;
 }
 
 .card button:hover {
     transform: scale(1.1);
-    box-shadow: 0 10px 25px rgba(255, 87, 34, 0.5);
+    box-shadow: 0 10px 25px rgba(142, 45, 226, 0.4);
 }
 
 /* 🎨 COLOUR CARNIVAL */
@@ -183,34 +318,37 @@ body {
     align-items: center;
     gap: 30px;
     padding: 40px;
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.95);
     border-radius: 30px;
     box-shadow: 0 14px 30px rgba(0,0,0,0.15);
     max-width: 500px;
     margin: 0 auto;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .colour-display {
     width: 200px;
     height: 200px;
     border-radius: 50%;
-    border: 8px solid #ffd180;
+    border: 8px solid rgba(142, 45, 226, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.5s ease;
     box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    background: rgba(255, 255, 255, 0.9);
 }
 
 .colour-display h2 {
     font-size: 32px;
-    color: #fff;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    color: #4a00e0;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     margin: 0;
 }
 
 .colour-container button {
-    background: linear-gradient(135deg, #ff9800, #ff5722);
+    background: linear-gradient(135deg, #4a00e0 0%, #8e2de2 100%);
     color: #fff;
     border: none;
     padding: 15px 40px;
@@ -219,9 +357,72 @@ body {
     cursor: pointer;
     transition: all 0.3s ease;
     font-weight: bold;
+    position: relative;
+    overflow: hidden;
 }
 
 .colour-container button:hover {
     transform: scale(1.05);
-    box-shadow: 0 10px 25px rgba(255, 87, 34, 0.5);
+    box-shadow: 0 10px 25px rgba(142, 45, 226, 0.5);
+}
+
+/* 📱 RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+    body {
+        flex-direction: column;
+    }
+    
+    .sidebar {
+        width: 100%;
+        height: auto;
+        border-radius: 0 0 30px 30px;
+        padding: 20px;
+    }
+    
+    .sidebar a,
+    .dropbtn {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+    
+    .main {
+        padding: 20px;
+    }
+    
+    .topbar h1 {
+        font-size: 22px;
+    }
+    
+    .cards {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+    
+    .shape {
+        display: none;
+    }
+    
+    .shape-1, .shape-2 {
+        display: block;
+        width: 80px;
+        height: 80px;
+    }
+}
+
+@media (max-width: 480px) {
+    .cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .card {
+        padding: 20px;
+        min-height: 180px;
+    }
+    
+    .card h3 {
+        font-size: 18px;
+    }
+    
+    .topbar {
+        padding: 20px;
+    }
 }

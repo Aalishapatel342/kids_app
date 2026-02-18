@@ -3,67 +3,890 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learn Numbers - Kids App</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Jungle Numbers Adventure</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Poppins:wght@400;600;700&display=swap');
+
+        * {
             margin: 0;
-            padding: 20px;
-            color: #333;
+            padding: 0;
+            box-sizing: border-box;
         }
+
+        body {
+            min-height: 100vh;
+            background-image: url('https://images.unsplash.com/photo-1511497584788-876760111969?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1932&q=80');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            font-family: 'Fredoka One', 'Poppins', sans-serif;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Back to Dashboard Button */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #FF8C00, #FF6B00);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 0 #8B4513, 0 5px 15px rgba(0,0,0,0.3);
+            border: 2px solid #FFD700;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #8B4513, 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        /* Jungle overlay for depth */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(46, 125, 50, 0.3) 0%, rgba(27, 94, 32, 0.4) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Jungle leaves animation */
+        .leaf {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path fill="%232E7D32" opacity="0.2" d="M50 10C30 20 20 40 25 60c5 20 25 30 45 25 20-5 30-25 25-45-5-20-25-30-45-25z"/></svg>');
+            background-size: contain;
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 2;
+            animation: floatLeaf 20s linear infinite;
+        }
+
+        .leaf1 { top: 10%; left: -50px; width: 150px; height: 150px; animation-delay: 0s; }
+        .leaf2 { bottom: 10%; right: -30px; width: 200px; height: 200px; animation-delay: 7s; transform: rotate(90deg); }
+        .leaf3 { top: 30%; right: 10%; width: 120px; height: 120px; animation-delay: 14s; transform: rotate(180deg); }
+        .leaf4 { bottom: 20%; left: 5%; width: 180px; height: 180px; animation-delay: 21s; transform: rotate(270deg); }
+
+        @keyframes floatLeaf {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
         .container {
-            max-width: 800px;
+            position: relative;
+            z-index: 10;
+            max-width: 1300px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header with wooden effect */
+        .header {
+            background: linear-gradient(145deg, #8B4513, #5D3A1A);
+            padding: 30px;
+            border-radius: 60px 60px 20px 20px;
+            margin-bottom: 50px;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.5);
+            border: 2px solid #CD853F;
+            position: relative;
+            transform: perspective(1000px) rotateX(2deg);
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(205, 133, 63, 0.2) 10px, rgba(205, 133, 63, 0.2) 20px);
+            border-radius: 60px 60px 20px 20px;
+            pointer-events: none;
+        }
+
+        .header h1 {
+            color: #FFD700;
+            font-size: 3.5em;
             text-align: center;
+            text-shadow: 4px 4px 0 #8B0000, 6px 6px 20px rgba(0,0,0,0.5);
+            letter-spacing: 4px;
+            position: relative;
+            font-family: 'Fredoka One', cursive;
         }
-        h1 {
-            color: #ff6b6b;
-            margin-bottom: 30px;
+
+        .header p {
+            color: #FFE4B5;
+            text-align: center;
+            font-size: 1.4em;
+            margin-top: 15px;
+            text-shadow: 2px 2px 0 #5D3A1A;
+            font-weight: 600;
         }
-        .numbers {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        .number {
-            background: linear-gradient(45deg, #ff6b6b, #ffa726);
+
+        /* Audio Control Button */
+        .audio-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
             color: white;
-            padding: 20px;
-            border-radius: 15px;
-            font-size: 2em;
-            font-weight: bold;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        .btn {
-            background: linear-gradient(45deg, #ff6b6b, #ffa726);
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 25px;
-            font-size: 18px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 5px 0 #1B5E20, 0 5px 15px rgba(0,0,0,0.3);
+            border: 2px solid #FFD700;
             cursor: pointer;
-            transition: transform 0.2s;
+            transition: all 0.3s ease;
+            z-index: 1000;
         }
-        .btn:hover {
-            transform: scale(1.05);
+
+        .audio-control:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0 #1B5E20, 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .audio-control.muted {
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+        }
+
+        /* Jungle path decoration */
+        .path-decoration {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .path-decoration span {
+            width: 20px;
+            height: 20px;
+            background: #D2B48C;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #DEB887;
+        }
+
+        /* Numbers grid - like jungle fruits/flowers */
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+            padding: 30px;
+            background: rgba(34, 139, 34, 0.2);
+            backdrop-filter: blur(5px);
+            border-radius: 100px 100px 50px 50px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+            margin-bottom: 40px;
+        }
+
+        /* Individual number card - like colorful jungle animals/plants */
+        .number-card {
+            background: radial-gradient(circle at 30% 30%, white, var(--card-color));
+            padding: 30px 20px;
+            border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.3),
+                        inset 0 -5px 0 rgba(0,0,0,0.2),
+                        inset 0 5px 15px rgba(255,255,255,0.5);
+            transition: all 0.3s ease;
+            animation: floatNumber 6s ease-in-out infinite;
+            border: 3px solid rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+        }
+
+        .number-card:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 30px 40px rgba(0,0,0,0.4),
+                        inset 0 -5px 0 rgba(0,0,0,0.3),
+                        inset 0 5px 20px rgba(255,255,255,0.8);
+            animation: none;
+        }
+
+        .number-card.speaking {
+            animation: speakPulse 0.5s ease-in-out;
+            border-color: #FFD700;
+            box-shadow: 0 0 30px #FFD700;
+        }
+
+        @keyframes speakPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); box-shadow: 0 0 40px #FFD700; }
+        }
+
+        @keyframes floatNumber {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        .number {
+            font-size: 5.5em;
+            font-weight: 900;
+            color: var(--number-color);
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.2), 6px 6px 20px rgba(0,0,0,0.3);
+            line-height: 1;
+            font-family: 'Fredoka One', cursive;
+            letter-spacing: 5px;
+        }
+
+        .number-label {
+            font-size: 1.4em;
+            margin-top: 15px;
+            padding: 8px 15px;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(2px);
+            border-radius: 30px;
+            color: #2D2D2D;
+            font-weight: bold;
+            text-transform: uppercase;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            display: inline-block;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .sound-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            border: 2px solid white;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .number-card:hover .sound-icon {
+            opacity: 1;
+        }
+
+        /* Jungle vines connecting numbers */
+        .number-card::before {
+            content: "";
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(to bottom, #8B4513, #2E7D32);
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        .number-card::after {
+            content: "";
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            width: 4px;
+            height: 20px;
+            background: linear-gradient(to top, #8B4513, #2E7D32);
+            transform: translateX(-50%);
+            border-radius: 2px;
+        }
+
+        /* Counting section */
+        .counting-section {
+            background: linear-gradient(145deg, #654321, #3D2B1F);
+            padding: 40px;
+            border-radius: 80px 80px 30px 30px;
+            margin-top: 40px;
+            box-shadow: 0 20px 30px rgba(0,0,0,0.5);
+            border: 2px solid #B8860B;
+            position: relative;
+        }
+
+        .counting-title {
+            color: #FFD700;
+            font-size: 2.2em;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 0 #8B4513;
+            font-family: 'Fredoka One', cursive;
+            letter-spacing: 2px;
+        }
+
+        .counting-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .counting-number {
+            background: radial-gradient(circle at 30% 30%, #FF6B6B, #C41E3A);
+            width: 120px;
+            height: 120px;
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            font-weight: bold;
+            color: white;
+            text-shadow: 4px 4px 0 #8B0000;
+            box-shadow: 0 15px 25px rgba(0,0,0,0.4);
+            border: 5px solid #FFD700;
+            animation: pulse 2s ease-in-out infinite;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .counting-number:hover {
+            transform: scale(1.1);
+            box-shadow: 0 20px 30px rgba(0,0,0,0.5);
+        }
+
+        .counting-number.speaking {
+            animation: speakPulse 0.5s ease-in-out;
+            border-color: #FFA500;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .counting-controls {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+            justify-content: center;
+        }
+
+        .jungle-btn {
+            padding: 18px 35px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(145deg, #FF8C00, #FF6B00);
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 2px 2px 0 #8B4513;
+            box-shadow: 0 10px 0 #8B4513, 0 10px 20px rgba(0,0,0,0.3);
+            border: 2px solid #FFD700;
+            font-family: 'Fredoka One', cursive;
+            letter-spacing: 2px;
+            flex: 1;
+            max-width: 250px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .jungle-btn:hover {
+            transform: translateY(5px);
+            box-shadow: 0 5px 0 #8B4513, 0 15px 25px rgba(0,0,0,0.4);
+            background: linear-gradient(145deg, #FFA500, #FF8C00);
+        }
+
+        .jungle-btn:active {
+            transform: translateY(10px);
+            box-shadow: 0 0px 0 #8B4513, 0 15px 25px rgba(0,0,0,0.4);
+        }
+
+        /* Jungle animals as decorations */
+        .animal {
+            position: absolute;
+            font-size: 2.5em;
+            color: rgba(255, 255, 255, 0.6);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .monkey { top: 10%; right: 5%; transform: rotate(10deg); }
+        .tiger { bottom: 15%; left: 3%; transform: rotate(-10deg); }
+        .elephant { top: 40%; left: 2%; font-size: 3em; }
+        .parrot { bottom: 30%; right: 2%; transform: rotate(15deg); }
+
+        /* Speech message */
+        .speech-message {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 10px 0 #1B5E20, 0 10px 30px rgba(0,0,0,0.3);
+            border: 3px solid #FFD700;
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideUp 0.5s ease;
+        }
+
+        .speech-message i {
+            font-size: 1.5rem;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes slideUp {
+            from { bottom: -100px; opacity: 0; }
+            to { bottom: 30px; opacity: 1; }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container { padding: 20px; }
+            .header h1 { font-size: 2.2em; }
+            .numbers-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+            .number { font-size: 3.8em; }
+            .number-label { font-size: 1.1em; }
+            .counting-number { width: 90px; height: 90px; font-size: 3em; }
+            .jungle-btn { padding: 12px 20px; font-size: 1.1em; }
+        }
+
+        @media (max-width: 480px) {
+            .numbers-grid { grid-template-columns: 1fr; }
+            .number-card { max-width: 250px; margin: 0 auto; }
+        }
+
+        /* Forest floor gradient */
+        .forest-floor {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 150px;
+            background: linear-gradient(to top, #2D5A27, transparent);
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        /* Sun rays through trees */
+        .sun-ray {
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            right: -50%;
+            bottom: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 215, 0, 0.1) 0%, transparent 60%);
+            animation: rotateSun 60s linear infinite;
+            pointer-events: none;
+            z-index: 4;
+        }
+
+        @keyframes rotateSun {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
+    <!-- Back to Dashboard Button -->
+    <a href="{{ url_for('dashboard') }}" class="back-btn" title="Back to Dashboard">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <!-- Audio Control Button -->
+    <div class="audio-control" id="audioControl" title="Click to toggle sound">
+        <i class="fas fa-volume-up"></i>
+    </div>
+
+    <!-- Jungle leaves decorations -->
+    <div class="leaf leaf1"></div>
+    <div class="leaf leaf2"></div>
+    <div class="leaf leaf3"></div>
+    <div class="leaf leaf4"></div>
+    
+    <!-- Forest floor effect -->
+    <div class="forest-floor"></div>
+    
+    <!-- Sun rays -->
+    <div class="sun-ray"></div>
+    
+    <!-- Animal silhouettes -->
+    <div class="animal monkey">🦍</div>
+    <div class="animal tiger">🐅</div>
+    <div class="animal elephant">🐘</div>
+    <div class="animal parrot">🦜</div>
+
     <div class="container">
-        <h1>🔢 Learn Numbers 1 to 20</h1>
-        <div class="numbers">
-            {% for i in range(1, 21) %}
-            <div class="number">{{ i }}</div>
-            {% endfor %}
+        <!-- Jungle Header -->
+        <div class="header">
+            <h1>🌿 NUMBERS 🌿</h1>
+            <div class="path-decoration">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <p>Discover the colorful numbers in the wild! <i class="fas fa-volume-up"></i> Click any number to hear it</p>
+        </div>
+
+        <!-- Colorful Numbers Grid -->
+        <div class="numbers-grid">
+            <!-- Number 1 - Red like a toucan's beak -->
+            <div class="number-card" style="--card-color: #FF6B6B; --number-color: #C41E3A;" data-number="1" data-word="one">
+                <div class="number">1</div>
+                <div class="number-label">ONE</div>
+                <div class="sound-icon"><i class="fas fa-volume-up"></i></div>
+            </div>
+            
+            <!-- Number 2 - Orange like a tiger -->
+            <div class="number-card" style="--card-color: #FFB347; --number-color: #FF8C00;" data-number="2" data-word="two">
+                <div class="number">2</div>
+                <div class="number-label">TWO</div>
+                <div class="sound-icon"><i class="fas fa-volume-up"></i></div>
+            </div>
+            
+            <!-- Number 3 - Yellow like the sun -->
+            <div class="number-card" style="--card-color: #FFD700; --number-color: #B8860B;" data-number="3" data-word="three">
+                <div class="number">3</div>
+                <div class="number-label">THREE</div>
+                <div class="sound-icon"><i class="fas fa-volume-up"></i></div>
+            </div>
+            
+            <!-- Number 4 - Green like leaves -->
+            <div class="number-card" style="--card-color: #4CAF50; --number-color: #2E7D32;" data-number="4" data-word="four">
+                <div class="number">4</div>
+                <div class="number-label">FOUR</div>
+                <div class="sound-icon"><i class="fas fa-volume-up"></i></div>
+            </div>
+            
+            <!-- Number 5 - Blue like the sky -->
+            <div class="number-card" style="--card-color: #6CA6CD; --number-color: #1E3F5F;" data-number="5" data-word="five">
+                <div class="number">5</div>
+                <div class="number-label">FIVE</div>
+                <div class="sound-icon"><i class="fas fa-volume-up"></i></div>
+            </div>
+            
+            <!-- Number 6 - Indigo like night sky -->
+            <div class="number-card" style="--card-color: #6A5ACD; --number-color: #483D8B;" data-number="6" data-word="six">
+                <div class="number">6</div>
+                <div class="number-label">SIX</div>
+                <div class="sound-icon"><i class="fas fa-volume-up"></i></div>
+            </div>
+            
+            <!-- Number 7 - Violet like orchids -->
+            <div class="number-card" style="--card-color: #AA80F9; --number-color: #6A4E9B;" data-number="7" data-word="seven">
+                <div class="number">7</div>
+                <div class="number-label">SEVEN</div>
+                <div class="sound-icon"><i class="fas fa-volume-up"></i></div>
+            </div>
+            
+            <!-- Number 8 - Pink like jungle flowers -->
+            <div class="number-card" style="--card-color: #FFB6C1; --number-color: #C71585;" data-number="8" data-word="eight">
+                <div class="number">8</div>
+                <div class="number-label">EIGHT</div>
+                <div class="sound-icon"><i class="fas fa-volume-up"></i></div>
+            </div>
+            
+            <!-- Number 9 - Brown like tree bark -->
+            <div class="number-card" style="--card-color: #D2B48C; --number-color: #8B4513;" data-number="9" data-word="nine">
+                <div class="number">9</div>
+                <div class="number-label">NINE</div>
+                <div class="sound-icon"><i class="fas fa-volume-up"></i></div>
+            </div>
+            
+            <!-- Number 0 - Silver like water -->
+            <div class="number-card" style="--card-color: #C0C0C0; --number-color: #4A4A4A;" data-number="0" data-word="zero">
+                <div class="number">0</div>
+                <div class="number-label">ZERO</div>
+                <div class="sound-icon"><i class="fas fa-volume-up"></i></div>
+            </div>
+        </div>
+
+        <!-- Interactive Counting Section -->
+        <div class="counting-section">
+            <div class="counting-title">COUNTING ADVENTURE</div>
+            
+            <div class="counting-display">
+                <div class="counting-number" id="displayNumber" title="Click to hear the number">0</div>
+            </div>
+            
+            <div class="counting-controls">
+                <button class="jungle-btn" onclick="countUp()">
+                    <i class="fas fa-plus-circle"></i> COUNT UP
+                </button>
+                <button class="jungle-btn" onclick="countDown()">
+                    <i class="fas fa-minus-circle"></i> COUNT DOWN
+                </button>
+                <button class="jungle-btn" onclick="resetCount()">
+                    <i class="fas fa-undo-alt"></i> RESET
+                </button>
+            </div>
         </div>
     </div>
+
+    <!-- Speech Message (hidden by default) -->
+    <div id="speechMessage" class="speech-message" style="display: none;">
+        <i class="fas fa-volume-up"></i>
+        <span id="speechText"></span>
+    </div>
+
+    <script>
+        // Speech Synthesis
+        let speechEnabled = true;
+        const speechMessage = document.getElementById('speechMessage');
+        const speechText = document.getElementById('speechText');
+        const audioControl = document.getElementById('audioControl');
+        
+        // Number words for speech
+        const numberWords = {
+            0: 'zero',
+            1: 'one',
+            2: 'two',
+            3: 'three',
+            4: 'four',
+            5: 'five',
+            6: 'six',
+            7: 'seven',
+            8: 'eight',
+            9: 'nine'
+        };
+
+        // Function to speak text
+        function speak(text, element = null) {
+            if (!speechEnabled) return;
+            
+            // Cancel any ongoing speech
+            window.speechSynthesis.cancel();
+            
+            // Create utterance
+            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // Get available voices and set a child-friendly voice if available
+            const voices = window.speechSynthesis.getVoices();
+            const childVoice = voices.find(voice => 
+                voice.name.includes('Google UK') || 
+                voice.name.includes('Samantha') || 
+                voice.name.includes('Female')
+            );
+            
+            if (childVoice) {
+                utterance.voice = childVoice;
+            }
+            
+            utterance.rate = 0.9; // Slightly slower for kids
+            utterance.pitch = 1.2; // Slightly higher pitch for friendly sound
+            utterance.volume = 1;
+            
+            // Show speech message
+            speechText.textContent = `"${text}"`;
+            speechMessage.style.display = 'flex';
+            
+            // Add speaking animation to element if provided
+            if (element) {
+                element.classList.add('speaking');
+            }
+            
+            // When speech ends
+            utterance.onend = function() {
+                speechMessage.style.display = 'none';
+                if (element) {
+                    element.classList.remove('speaking');
+                }
+            };
+            
+            utterance.onerror = function() {
+                speechMessage.style.display = 'none';
+                if (element) {
+                    element.classList.remove('speaking');
+                }
+            };
+            
+            // Speak
+            window.speechSynthesis.speak(utterance);
+            
+            // Auto-hide after 3 seconds if speech doesn't end
+            setTimeout(() => {
+                speechMessage.style.display = 'none';
+                if (element) {
+                    element.classList.remove('speaking');
+                }
+            }, 3000);
+        }
+
+        // Toggle speech
+        audioControl.addEventListener('click', function() {
+            speechEnabled = !speechEnabled;
+            const icon = this.querySelector('i');
+            
+            if (speechEnabled) {
+                icon.className = 'fas fa-volume-up';
+                this.classList.remove('muted');
+                speak('Sound on');
+            } else {
+                icon.className = 'fas fa-volume-mute';
+                this.classList.add('muted');
+                window.speechSynthesis.cancel();
+                speechMessage.style.display = 'none';
+            }
+        });
+
+        // Add click event to all number cards
+        document.querySelectorAll('.number-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const number = this.getAttribute('data-number');
+                const word = this.getAttribute('data-word');
+                
+                // Speak the number
+                speak(word, this);
+                
+                // Update counting display
+                currentCount = parseInt(number);
+                updateDisplay();
+            });
+        });
+
+        // Add click event to counting display
+        const displayNumber = document.getElementById('displayNumber');
+        displayNumber.addEventListener('click', function() {
+            const number = currentCount;
+            const word = numberWords[number];
+            speak(word, this);
+        });
+
+        // Existing counting functionality
+        let currentCount = 0;
+        const numberColors = [
+            '#C41E3A', // 1 - Red
+            '#FF8C00', // 2 - Orange
+            '#B8860B', // 3 - Gold
+            '#2E7D32', // 4 - Green
+            '#1E3F5F', // 5 - Blue
+            '#483D8B', // 6 - Indigo
+            '#6A4E9B', // 7 - Violet
+            '#C71585', // 8 - Pink
+            '#8B4513', // 9 - Brown
+            '#4A4A4A'  // 0 - Gray
+        ];
+
+        function countUp() {
+            currentCount = (currentCount + 1) % 10;
+            updateDisplay();
+            speak(numberWords[currentCount], displayNumber);
+            animateNumber();
+        }
+
+        function countDown() {
+            currentCount = (currentCount - 1 + 10) % 10;
+            updateDisplay();
+            speak(numberWords[currentCount], displayNumber);
+            animateNumber();
+        }
+
+        function resetCount() {
+            currentCount = 0;
+            updateDisplay();
+            speak('zero', displayNumber);
+        }
+
+        function updateDisplay() {
+            displayNumber.textContent = currentCount;
+            displayNumber.style.background = `radial-gradient(circle at 30% 30%, #FF6B6B, ${numberColors[currentCount]})`;
+            
+            // Add bounce effect
+            displayNumber.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                displayNumber.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        function animateNumber() {
+            // Create floating numbers effect
+            const floatingNumber = document.createElement('div');
+            floatingNumber.textContent = currentCount;
+            floatingNumber.style.position = 'fixed';
+            floatingNumber.style.left = Math.random() * window.innerWidth + 'px';
+            floatingNumber.style.top = window.innerHeight / 2 + 'px';
+            floatingNumber.style.fontSize = '60px';
+            floatingNumber.style.fontWeight = 'bold';
+            floatingNumber.style.color = numberColors[currentCount];
+            floatingNumber.style.textShadow = '4px 4px 0 rgba(0,0,0,0.2)';
+            floatingNumber.style.zIndex = '1000';
+            floatingNumber.style.animation = 'floatUp 2s ease-out forwards';
+            floatingNumber.style.pointerEvents = 'none';
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes floatUp {
+                    0% { transform: translateY(0) scale(1); opacity: 1; }
+                    100% { transform: translateY(-200px) scale(1.5); opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(floatingNumber);
+            
+            setTimeout(() => {
+                floatingNumber.remove();
+                style.remove();
+            }, 2000);
+        }
+
+        // Auto-rotate numbers in the grid (optional)
+        function rotateNumberColors() {
+            const cards = document.querySelectorAll('.number-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        card.style.transform = '';
+                    }, 500);
+                }, index * 200);
+            });
+        }
+
+        // Run rotation every 10 seconds
+        setInterval(rotateNumberColors, 10000);
+
+        // Load voices
+        window.speechSynthesis.onvoiceschanged = function() {
+            // Voices are loaded
+            console.log('Voices loaded');
+        };
+    </script>
 </body>
 </html>

@@ -1,41 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Junior Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
-    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
-
+    <title>Kids Dashboard</title>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Floating background shapes -->
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        <div class="shape shape-6"></div>
+    </div>
 
-<!-- SIDEBAR -->
-<div class="sidebar">
-    <h3 class="logo">🧒 MINI CLUB</h3>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h3 class="logo">MINI CLUB</h3>
 
-    <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
-    <a href="/progress">📊 Progress</a>
+        <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
+        <a href="/activities">? About</a>
+        <a href="/progress">📊 Progress</a>
 
-    <div class="dropdown">
-        <button class="dropbtn">⚙ Settings ▾</button>
-        <div class="dropdown-content">
-            <a href="{{ url_for('profile') }}">👶 My Profile</a>   
+        <div class="dropdown">
+            <button class="dropbtn">⚙ Settings ▾</button>
+            <div class="dropdown-content">
+                <a href="{{ url_for('profile') }}">👶 My Profile</a>
+            </div>
         </div>
+
+        <a href="{{ url_for('logout') }}" class="logout">🚪 Logout</a>
     </div>
 
-    <a href="{{ url_for('logout') }}" class="logout">🚪 Logout</a>
-</div>
+    <!-- Main Content -->
+    <div class="main">
+        <!-- Top Navbar -->
+        <div class="topbar">
+            <h1>Welcome to Kids Dashboard{% if username %}, {{ username }}{% endif %}!</h1>
+            <input type="text" name="search" placeholder="Search activities...">
+        </div>
 
-<!-- Main Content -->
-<div class="main">
-
-    <!-- Top Navbar -->
-    <div class="topbar">
-        <h1>Welcome to Junior Dashboard{% if username %}, {{ username }}{% endif %}!</h1>
-        <input type="text" placeholder="Search activities...">
-    </div>
-
-    <!-- Activity Cards -->
-    <div class="cards">
+        <!-- Activity Cards -->
+        <div class="cards">
         <div class="card" data-name="Drawing" data-desc="Color & drawing fun">
             <h3>🎨 Drawing</h3>
             <p>Color & drawing fun</p>
@@ -54,24 +62,19 @@
             <a href="/math"><button>Start</button></a>
         </div>
 
-        <div class="card" data-name="Word Builder" data-desc="Spell & learn words">
-            <h3>📝 Word Builder</h3>
-            <p>Spell & learn words</p>
-            <a href="/words"><button>Start</button></a>
-        </div>
-        
         <div class="card" data-name="Shape Builder" data-desc="Shape Drawing">
             <h3>🧩 Shape Builder</h3>
             <p>Build objects using shapes</p>
             <a href="/shape_builder"><button>Start</button></a>
         </div>
-
-        <div class="card" data-name="Story Time" data-desc="Listen to fun stories">
-            <h3>📖 Story Time</h3>
-            <p>Listen to fun stories</p>
-            <a href="/story_time"><button>Start</button></a>
+        <div class="card" data-name="Career Explorer" data-desc="Discover different jobs">
+                <h3>🚀 Career Explorer</h3>
+                <p>Discover different jobs</p>
+                <a href="/careers"><button>Start</button></a>
+            </div>
         </div>
     </div>
 </div>
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
 </body>
 </html>

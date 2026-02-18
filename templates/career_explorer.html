@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Explorer for Kids</title>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/career_explorer.css') }}">
+</head>
+<body>
+    <!-- Back to Dashboard Button -->
+    <a href="{{ url_for('dashboard') }}" class="back-btn" title="Back to Dashboard">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-compass"></i> Career Explorer</h1>
+            <p>Discover amazing jobs and find what you love!</p>
+        </header>
+
+        <nav class="main-nav">
+            <button class="nav-btn active" onclick="showActivityCards()">
+                <i class="fas fa-home"></i> Home
+            </button>
+            <button class="nav-btn" onclick="exploreCareers()">
+                <i class="fas fa-briefcase"></i> Explore Careers
+            </button>
+            <button class="nav-btn" onclick="viewFavorites()">
+                <i class="fas fa-star"></i> My Favorites
+            </button>
+        </nav>
+
+        <div class="content">
+            <!-- Activity Cards Section -->
+            <div class="activity-cards">
+                <div class="activity-card" onclick="startCareerQuiz()">
+                    <div class="activity-icon">
+                        <i class="fas fa-question-circle"></i>
+                    </div>
+                    <h2>Take the Quiz</h2>
+                    <p>Answer fun questions to discover careers you might love!</p>
+                    <button class="start-btn">Start Quiz</button>
+                </div>
+                
+                <div class="activity-card" onclick="exploreCareers()">
+                    <div class="activity-icon">
+                        <i class="fas fa-briefcase"></i>
+                    </div>
+                    <h2>Explore All Careers</h2>
+                    <p>Learn about astronauts, veterinarians, game designers and more!</p>
+                    <button class="start-btn">Explore Now</button>
+                </div>
+                
+                <div class="activity-card" onclick="viewFavorites()">
+                    <div class="activity-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <h2>My Favorites</h2>
+                    <p>View and manage your favorite careers!</p>
+                    <button class="start-btn">View Favorites</button>
+                </div>
+            </div>
+
+            <!-- Quiz Section -->
+            <div id="quizSection" class="quiz-container" style="display: none;">
+                <div class="quiz-header">
+                    <h2>Career Quiz</h2>
+                    <p>Question <span id="currentQuestion">1</span> of 5</p>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill" style="width: 20%;"></div>
+                    </div>
+                </div>
+                
+                <div class="question-container">
+                    <h3 id="questionText">Loading question...</h3>
+                    <div id="optionsContainer" class="options-container">
+                        <!-- Options will be loaded here -->
+                    </div>
+                </div>
+                
+                <div class="quiz-navigation">
+                    <button id="prevBtn" class="nav-btn" onclick="previousQuestion()" style="display: none;">
+                        <i class="fas fa-arrow-left"></i> Previous
+                    </button>
+                    <button id="nextBtn" class="nav-btn" onclick="nextQuestion()">
+                        Next <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <button id="submitBtn" class="submit-btn" onclick="submitQuiz()" style="display: none;">
+                        <i class="fas fa-check"></i> See Results
+                    </button>
+                </div>
+            </div>
+
+            <!-- Career Gallery Section -->
+            <div id="careerGallery" class="career-gallery" style="display: none;">
+                <div class="gallery-header">
+                    <h2><i class="fas fa-briefcase"></i> Explore Careers</h2>
+                    <div class="filter-buttons">
+                        <button class="category-btn active" onclick="filterCareers('all')">All</button>
+                        <button class="category-btn" onclick="filterCareers('science')">Science</button>
+                        <button class="category-btn" onclick="filterCareers('art')">Art</button>
+                        <button class="category-btn" onclick="filterCareers('tech')">Tech</button>
+                        <button class="category-btn" onclick="filterCareers('health')">Health</button>
+                        <button class="category-btn" onclick="filterCareers('nature')">Nature</button>
+                    </div>
+                </div>
+                <div id="careerGrid" class="career-grid">
+                    <!-- Careers will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div id="resultsSection" class="career-gallery" style="display: none;">
+                <div class="gallery-header">
+                    <h2><i class="fas fa-trophy"></i> Your Career Matches!</h2>
+                    <div>
+                        <button class="nav-btn" onclick="saveResults()">
+                            <i class="fas fa-save"></i> Save Results
+                        </button>
+                        <button class="nav-btn" onclick="retakeQuiz()">
+                            <i class="fas fa-redo"></i> Retake Quiz
+                        </button>
+                    </div>
+                </div>
+                <div id="careerResults" class="career-grid">
+                    <!-- Results will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Career Detail Modal -->
+    <div id="careerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Career Details</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modalBody" class="modal-body">
+                <!-- Career details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/career_explorer.js') }}"></script>
+</body>
+</html>

@@ -2,72 +2,74 @@
 <html>
 <head>
     <title>Kids Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
-
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
-<!-- SIDEBAR -->
-<div class="sidebar">
-    <h3 class="logo">🧒 MINI CLUB</h3>
-
-    <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
-    <a href="/progress">📊 Progress</a>
-
-    <div class="dropdown">
-        <button class="dropbtn">⚙ Settings ▾</button>
-        <div class="dropdown-content">
-            <a href="{{ url_for('profile') }}">👶 My Profile</a>
-        </div>
+    <!-- Floating background shapes -->
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+        <div class="shape shape-5"></div>
+        <div class="shape shape-6"></div>
     </div>
 
-    <a href="{{ url_for('logout') }}" class="logout">🚪 Logout</a>
-</div>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h3 class="logo">MINI CLUB</h3>
 
-<!-- Main Content -->
-<div class="main">
+        <a href="{{ url_for('dashboard') }}">🏠 Dashboard</a>
+        <a href="/activities">? About</a>
+        <a href="/progress">📊 Progress</a>
 
-    <!-- Top Navbar -->
-    <div class="topbar">
-        <h1>Welcome to Kids Dashboard{% if username %}, {{ username }}{% endif %}!</h1>
-        <input type="text" placeholder="Search activities...">
+        <div class="dropdown">
+            <button class="dropbtn">⚙ Settings ▾</button>
+            <div class="dropdown-content">
+                <a href="{{ url_for('profile') }}">👶 My Profile</a>
+            </div>
+        </div>
+
+        <a href="{{ url_for('logout') }}" class="logout">🚪 Logout</a>
     </div>
 
-    
-    <!-- Activity Cards -->
-    <div class="cards">
-
-        <div class="card">
-            <h3>🔤 Learn Alphabet</h3>
-            <p>A to Z learning for kids</p>
-            <a href="/alphabet"><button>Start</button></a>
+    <!-- Main Content -->
+    <div class="main">
+        <!-- Top Navbar -->
+        <div class="topbar">
+            <h1>Welcome to Kids Dashboard{% if username %}, {{ username }}{% endif %}!</h1>
+            <input type="text" name="search" placeholder="Search activities...">
         </div>
 
-        <div class="card">
-            <h3>🔢 Learn Numbers</h3>
-            <p>1 to 20 fun counting</p>
-            <a href="/numbers"><button>Start</button></a>
-        </div>
+        <!-- Activity Cards -->
+        <div class="cards">
+            <div class="card" data-name="learn alphabet" data-desc="a to z learning for kids">
+                <h3>🔤 Learn Alphabet</h3>
+                <p>A to Z learning for kids</p>
+                <a href="/alphabet"><button>Start</button></a>
+            </div>
 
-        <div class="card">
-            <h3>🎨 Drawing</h3>
-            <p>Color & drawing fun</p>
-            <a href="/drawing"><button>Start</button></a>
-        </div>
+            <div class="card" data-name="learn numbers" data-desc="1 to 20 fun counting">
+                <h3>🔢 Learn Numbers</h3>
+                <p>1 to 20 fun counting</p>
+                <a href="/numbers"><button>Start</button></a>
+            </div>
 
-        <div class="card">
-        <h3>📽️ Rhymes & Music</h3>
-        <p>Fun rhymes videos</p>
-        <a href="{{ url_for('kids_videos') }}"><button>Start</button></a>
-        </div>
+            <div class="card" data-name="drawing" data-desc="color and drawing fun">
+                <h3>🎨 Drawing</h3>
+                <p>Color & drawing fun</p>
+                <a href="/drawing"><button>Start</button></a>
+            </div>
 
-        <div class="card">
-        <h3>🎨 Colour Carnival</h3>
-        <p>Random colors & fun sounds</p>
-        <a href="/colour_carnival"><button>Start</button></a>
+            <div class="card" data-name="color carnival" data-desc="spin the wheel and win coins">
+                <h3>🎨 Color Carnival</h3>
+                <p>Spin the wheel & win coins</p>
+                <a href="/colour_carnival"><button>Start</button></a>
+            </div>
         </div>
     </div>
-</div>
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
 </body>
 </html>

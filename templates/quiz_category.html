@@ -1,76 +1,401 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Choose Quiz Category</title>
-<style>
-body{
-    margin:0;
-    font-family: Comic Sans MS, cursive;
-    background: linear-gradient(135deg,#3b82f6,#06b6d4);
-    min-height:100vh;
-}
-.box{
-    max-width:700px;
-    margin:40px auto;
-    background:white;
-    padding:30px;
-    border-radius:25px;
-    box-shadow:0 15px 40px rgba(0,0,0,0.3);
-}
-h2{text-align:center;color:#2563eb;}
-.category{
-    background:#f1f5f9;
-    padding:15px;
-    border-radius:15px;
-    margin-bottom:15px;
-    text-align:center;
-}
-button{
-    width:100%;
-    padding:14px;
-    border:none;
-    border-radius:25px;
-    background:#2563eb;
-    color:white;
-    font-size:18px;
-    cursor:pointer;
-}
-button:hover{background:#1d4ed8;}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Quiz Category - Kids Learning App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', cursive, sans-serif;
+            background: url('https://images.unsplash.com/photo-1516627145497-ae6968895b74?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.7);
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 600px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            border: 5px solid #FFB6C1;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #87CEEB, #98D8C8);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 5px solid #FFB6C1;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.2em;
+            text-shadow: 3px 3px 0 #FF69B4;
+            margin: 0;
+        }
+
+        .header h1 i {
+            margin: 0 10px;
+            color: #FFD700;
+        }
+
+        .login-card {
+            background: white;
+            margin: 20px;
+            padding: 30px 35px;
+            border-radius: 30px;
+            box-shadow: 0 8px 0 #FFB6C1;
+            border: 3px solid #FF69B4;
+        }
+
+        h2 {
+            text-align: center;
+            color: #4682B4;
+            font-size: 28px;
+            margin-bottom: 25px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-shadow: 2px 2px 0 rgba(255, 105, 180, 0.1);
+            position: relative;
+            padding-bottom: 15px;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #FF69B4, #FFB6C1);
+            border-radius: 4px;
+        }
+
+        .category {
+            background: #ffffff;
+            padding: 18px 25px;
+            border-radius: 30px;
+            margin-bottom: 15px;
+            text-align: left;
+            border: 3px solid #87CEEB;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-family: 'Comic Sans MS', cursive;
+        }
+
+        .category:hover {
+            border-color: #FF69B4;
+            background: linear-gradient(95deg, #fff0f5, #ffffff);
+            box-shadow: 0 8px 20px -6px rgba(255, 105, 180, 0.3);
+            transform: scale(1.02);
+        }
+
+        .category input[type="radio"] {
+            appearance: none;
+            -webkit-appearance: none;
+            width: 22px;
+            height: 22px;
+            border: 3px solid #87CEEB;
+            border-radius: 50%;
+            margin-right: 15px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .category input[type="radio"]:checked {
+            border-color: #FF69B4;
+            background: #FF69B4;
+            box-shadow: 0 0 0 4px rgba(255, 105, 180, 0.2);
+        }
+
+        .category input[type="radio"]:checked::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .category label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #4682B4;
+            cursor: pointer;
+            flex: 1;
+            letter-spacing: 0.3px;
+        }
+
+        .category.selected {
+            background: linear-gradient(95deg, #fff0f5, #ffe4e9);
+            border-color: #FF69B4;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px 28px;
+            border: 3px solid white;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #FF69B4, #FFB6C1);
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 8px 0 #FF1493;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Comic Sans MS', cursive;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 11px 0 #FF1493;
+            background: linear-gradient(135deg, #FFB6C1, #FF69B4);
+        }
+
+        button:active {
+            transform: translateY(5px);
+            box-shadow: 0 4px 0 #FF1493;
+        }
+
+        button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::after {
+            width: 300px;
+            height: 300px;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .login-card {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        /* Cloud Decorations */
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 1000px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .cloud1 {
+            width: 150px;
+            height: 60px;
+            top: 50px;
+            left: 20px;
+        }
+
+        .cloud2 {
+            width: 200px;
+            height: 80px;
+            bottom: 50px;
+            right: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .login-card {
+                padding: 20px 18px;
+                margin: 15px;
+            }
+            
+            h2 {
+                font-size: 22px;
+            }
+            
+            .category label {
+                font-size: 14px;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Cloud decorations -->
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
 
-<div class="box">
-<h2>🧠 Choose Quiz Category</h2>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <i class="fas fa-star"></i>
+                Select Category
+                <i class="fas fa-star"></i>
+            </h1>
+        </div>
 
-<form method="POST">
-    <div class="category">
-        <input type="radio" name="category" value="numeric" id="numeric" required>
-        <label for="numeric">Numeric (Math and Numbers)</label>
+        <div class="login-card">
+            <h2>SELECT CATEGORY</h2>
+
+            <form method="POST" id="quizForm">
+                <div class="category" onclick="document.getElementById('numeric').click()">
+                    <input type="radio" name="category" value="numeric" id="numeric" required>
+                    <label for="numeric"><i class="fas fa-calculator"></i> NUMERIC - Mathematics & Numbers</label>
+                </div>
+                <div class="category" onclick="document.getElementById('geography').click()">
+                    <input type="radio" name="category" value="geography" id="geography">
+                    <label for="geography"><i class="fas fa-globe"></i> GEOGRAPHY - Places & Capitals</label>
+                </div>
+                <div class="category" onclick="document.getElementById('science').click()">
+                    <input type="radio" name="category" value="science" id="science">
+                    <label for="science"><i class="fas fa-flask"></i> SCIENCE - Nature & Animals</label>
+                </div>
+                <div class="category" onclick="document.getElementById('general').click()">
+                    <input type="radio" name="category" value="general" id="general">
+                    <label for="general"><i class="fas fa-lightbulb"></i> GENERAL KNOWLEDGE</label>
+                </div>
+                <div class="category" onclick="document.getElementById('history').click()">
+                    <input type="radio" name="category" value="history" id="history">
+                    <label for="history"><i class="fas fa-landmark"></i> HISTORY - Past & Civilizations</label>
+                </div>
+                <div class="category" onclick="document.getElementById('sports').click()">
+                    <input type="radio" name="category" value="sports" id="sports">
+                    <label for="sports"><i class="fas fa-football-ball"></i> SPORTS - Games & Athletes</label>
+                </div>
+                <button type="submit" id="startBtn"><i class="fas fa-play"></i> START QUIZ</button>
+            </form>
+        </div>
     </div>
-    <div class="category">
-        <input type="radio" name="category" value="geography" id="geography">
-        <label for="geography">Geography (Places and Colors)</label>
-    </div>
-    <div class="category">
-        <input type="radio" name="category" value="science" id="science">
-        <label for="science">Science (Nature and Animals)</label>
-    </div>
-    <div class="category">
-        <input type="radio" name="category" value="general" id="general">
-        <label for="general">General Knowledge</label>
-    </div>
-    <div class="category">
-        <input type="radio" name="category" value="history" id="history">
-        <label for="history">History</label>
-    </div>
-    <div class="category">
-        <input type="radio" name="category" value="sports" id="sports">
-        <label for="sports">Sports</label>
-    </div>
-    <button type="submit">Start Quiz 🚀</button>
-</form>
-</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('quizForm');
+            const startBtn = document.getElementById('startBtn');
+            const categories = document.querySelectorAll('.category');
+            
+            // Disable start button initially
+            startBtn.style.opacity = '0.7';
+            startBtn.style.cursor = 'not-allowed';
+            
+            // Enable/disable start button based on selection
+            const radios = document.querySelectorAll('input[name="category"]');
+            radios.forEach(radio => {
+                radio.addEventListener('change', function() {
+                    if (this.checked) {
+                        startBtn.style.opacity = '1';
+                        startBtn.style.cursor = 'pointer';
+                        
+                        // Remove selected class from all categories
+                        categories.forEach(cat => {
+                            cat.classList.remove('selected');
+                        });
+                        
+                        // Add selected class to parent category
+                        this.closest('.category').classList.add('selected');
+                    }
+                });
+            });
+            
+            // Form validation
+            form.addEventListener('submit', function(e) {
+                const selected = document.querySelector('input[name="category"]:checked');
+                if (!selected) {
+                    e.preventDefault();
+                    alert('Please select a category to continue');
+                    
+                    // Shake animation for unselected form
+                    form.classList.add('shake');
+                    setTimeout(() => {
+                        form.classList.remove('shake');
+                    }, 500);
+                }
+            });
+            
+            // Add keyboard navigation
+            document.addEventListener('keydown', function(e) {
+                const key = e.key;
+                if (key >= '1' && key <= '6') {
+                    e.preventDefault();
+                    const index = parseInt(key) - 1;
+                    if (categories[index]) {
+                        const radio = categories[index].querySelector('input[type="radio"]');
+                        radio.checked = true;
+                        radio.dispatchEvent(new Event('change'));
+                    }
+                } else if (key === 'Enter' && e.target.tagName !== 'BUTTON') {
+                    e.preventDefault();
+                    const selected = document.querySelector('input[name="category"]:checked');
+                    if (selected) {
+                        form.submit();
+                    }
+                }
+            });
+            
+            // Add shake animation CSS
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                    20%, 40%, 60%, 80% { transform: translateX(5px); }
+                }
+                .shake {
+                    animation: shake 0.5s ease-in-out;
+                }
+            `;
+            document.head.appendChild(style);
+            
+            console.log('Quiz category page loaded with login theme');
+        });
+    </script>
 
 </body>
 </html>

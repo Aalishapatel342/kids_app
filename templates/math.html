@@ -530,6 +530,21 @@
             color: #ff4444;
         }
 
+        /* Loading indicator */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             body {
@@ -703,7 +718,7 @@
 
         <div class="instructions">
             <h3><i class="fas fa-gamepad"></i> How to Play</h3>
-            <p>Match numbers with their visual representations! Click cards to reveal them and find matching pairs. Complete before time runs out to earn bonus coins! ⏰</p>
+            <p>Match numbers with their visual representations! Complete levels to earn coins. <strong>🎁 20 BONUS COINS for completing all levels!</strong> ⏰</p>
         </div>
 
         <div class="score-display">
@@ -747,12 +762,31 @@
         <p>Amazing job! You're getting better! 🎯</p>
         <div class="coins-earned">+<span id="earnedCoins">10</span> <i class="fas fa-coins"></i></div>
         <p>Bonus: <span id="bonusCoins">0</span> coins for time left!</p>
+        <div id="bonus20Display" style="display: none; margin-top: 10px; background: gold; color: #333; padding: 10px; border-radius: 10px;">
+            <strong>🎁 BONUS: +20 COINS! 🎁</strong>
+        </div>
         <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
             <button class="btn btn-primary" onclick="nextLevel()">
                 <i class="fas fa-forward"></i> Next Level
             </button>
             <button class="btn btn-secondary" onclick="playAgain()">
                 <i class="fas fa-play"></i> Play Again
+            </button>
+        </div>
+    </div>
+
+    <!-- Final Completion Modal -->
+    <div id="finalCompleteModal" class="celebration" style="display: none; background: linear-gradient(135deg, #FFD700, #FFA500);">
+        <h2><i class="fas fa-crown"></i> CONGRATULATIONS!</h2>
+        <p>You completed all levels! 🏆</p>
+        <div style="font-size: 3em; margin: 20px;">🎁 +20 BONUS COINS! 🎁</div>
+        <div class="coins-earned">Total Earned: <span id="totalCoinsEarned">0</span> <i class="fas fa-coins"></i></div>
+        <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+            <button class="btn btn-primary" onclick="playAgain()">
+                <i class="fas fa-play"></i> Play Again
+            </button>
+            <button class="btn btn-secondary" onclick="goBack()">
+                <i class="fas fa-home"></i> Dashboard
             </button>
         </div>
     </div>
@@ -770,12 +804,86 @@
         let streak = 0;
         let hintsLeft = 3;
         let gameStarted = false;
-
-        // Initialize game
+        let totalLevels = 5; // Total number of levels for 20 coin bonus
+        
+        // Check authentication on load
         document.addEventListener('DOMContentLoaded', function() {
+            checkAuth();
             updateDisplay();
             startGame();
         });
+
+        // Check if user is logged in
+        async function checkAuth() {
+            try {
+                const response = await fetch('/api/user_stats');
+                if (!response.ok) {
+                    window.location.href = '/login';
+                    return false;
+                }
+                const data = await response.json();
+                coins = data.coins;
+                updateDisplay();
+                return true;
+            } catch (error) {
+                console.error('Auth check failed:', error);
+                window.location.href = '/login';
+                return false;
+            }
+        }
+
+        // Load user's current coins from server
+        async function loadUserCoins() {
+            try {
+                const response = await fetch('/api/user_stats');
+                if (response.ok) {
+                    const data = await response.json();
+                    coins = data.coins;
+                    updateDisplay();
+                }
+            } catch (error) {
+                console.error('Error loading coins:', error);
+            }
+        }
+
+        // Save game result to server
+        async function saveGameResult(levelCompleted, earnedCoins) {
+            try {
+                const response = await fetch('/api/math/complete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        level: levelCompleted,
+                        score: score,
+                        coins_earned: earnedCoins
+                    })
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        window.location.href = '/login';
+                        return;
+                    }
+                    throw new Error('Failed to save game result');
+                }
+
+                const result = await response.json();
+                console.log('Game result saved:', result);
+                
+                // Update coins with the new total from server
+                if (result.total_coins) {
+                    coins = result.total_coins;
+                    updateDisplay();
+                }
+                
+                return result;
+            } catch (error) {
+                console.error('Error saving game result:', error);
+                return null;
+            }
+        }
 
         function startGame() {
             resetGame();
@@ -794,6 +902,7 @@
             timeLeft = 60 + (currentLevel * 5);
             document.getElementById('timer').textContent = timeLeft;
             document.getElementById('celebrationModal').style.display = 'none';
+            document.getElementById('finalCompleteModal').style.display = 'none';
             clearInterval(gameTimer);
             updateProgress();
         }
@@ -813,7 +922,7 @@
 
         function generateCards() {
             const numbers = [];
-            const pairs = currentLevel + 2;
+            const pairs = Math.min(currentLevel + 2, 8); // Max 8 pairs
 
             // Generate number pairs
             for (let i = 1; i <= pairs; i++) {
@@ -943,17 +1052,40 @@
             progressText.textContent = Math.round(progress) + '%';
         }
 
-        function levelComplete() {
+        async function levelComplete() {
             clearInterval(gameTimer);
 
             // Create confetti effect
             createConfetti();
 
-            const bonusCoins = timeLeft * 5;
-            coins += 10 + bonusCoins;
+            const bonusCoins = Math.floor(timeLeft * 0.5); // 0.5 coin per second left
+            let totalEarnedCoins = 10 + bonusCoins; // 10 base coins + bonus
+            
+            // Check if this is the final level for 20 coin bonus
+            let isFinalLevel = (currentLevel >= totalLevels);
+            let earned20Bonus = false;
+            
+            if (isFinalLevel) {
+                totalEarnedCoins += 20; // Add 20 bonus coins
+                earned20Bonus = true;
+            }
 
+            // Save to server
+            await saveGameResult(currentLevel, totalEarnedCoins);
+
+            // Update display
             document.getElementById('earnedCoins').textContent = 10;
             document.getElementById('bonusCoins').textContent = bonusCoins;
+            
+            // Show 20 bonus display if final level
+            const bonus20Display = document.getElementById('bonus20Display');
+            if (isFinalLevel) {
+                bonus20Display.style.display = 'block';
+                bonus20Display.innerHTML = '<strong>🎁 LEVEL COMPLETE BONUS: +20 COINS! 🎁</strong>';
+            } else {
+                bonus20Display.style.display = 'none';
+            }
+            
             document.getElementById('celebrationModal').style.display = 'block';
             updateDisplay();
         }
@@ -963,17 +1095,34 @@
             resetGame();
         }
 
-        function nextLevel() {
+        async function nextLevel() {
+            if (currentLevel >= totalLevels) {
+                // Show final completion modal
+                document.getElementById('celebrationModal').style.display = 'none';
+                
+                // Award 20 bonus coins for completing all levels
+                await saveGameResult(0, 20); // Level 0 indicates bonus completion
+                
+                document.getElementById('totalCoinsEarned').textContent = coins;
+                document.getElementById('finalCompleteModal').style.display = 'block';
+                return;
+            }
+            
             currentLevel++;
             streak = Math.floor(streak / 2); // Reduce streak for next level
-            coins += 10; // Award 10 coins for completing the level
-            updateDisplay();
             document.getElementById('celebrationModal').style.display = 'none';
             startGame();
         }
 
         function playAgain() {
+            currentLevel = 1;
+            score = 0;
+            streak = 0;
+            hintsLeft = 3;
+            document.getElementById('hintBtn').innerHTML = `<i class="fas fa-lightbulb"></i> Hint (${hintsLeft})`;
             document.getElementById('celebrationModal').style.display = 'none';
+            document.getElementById('finalCompleteModal').style.display = 'none';
+            loadUserCoins(); // Reload coins from server
             startGame();
         }
 
@@ -1056,7 +1205,7 @@
             }
         }
 
-        function goBack() {
+        async function goBack() {
             if (confirm('Are you sure you want to leave? Your progress will be saved.')) {
                 window.location.href = '/dashboard';
             }

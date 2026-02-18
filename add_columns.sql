@@ -1,0 +1,6 @@
+ALTER TABLE user ADD COLUMN avatar_color TEXT;
+ALTER TABLE user ADD COLUMN avatar_icon TEXT;
+ALTER TABLE user ADD COLUMN drawings_created INTEGER;
+ALTER TABLE user ADD COLUMN favorites_count INTEGER;
+ALTER TABLE user ADD COLUMN days_active INTEGER;
+ALTER TABLE user ADD COLUMN last_active DATETIME;

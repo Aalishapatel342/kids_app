@@ -1,5 +1,7 @@
 Flask
 Flask-SQLAlchemy
+flask-cors
+flask-migrate
 selenium
 webdriver-manager
 WeasyPrint

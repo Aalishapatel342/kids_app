@@ -6,26 +6,64 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
+/* ---------- BACK TO DASHBOARD BUTTON ---------- */
+.back-btn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: linear-gradient(135deg, #00ACC1, #00838F);
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1.5rem;
+    box-shadow: 0 5px 0 #006064, 0 5px 15px rgba(0,0,0,0.3);
+    border: 2px solid #4DD0E1;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.back-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 0 #006064, 0 8px 20px rgba(0,0,0,0.4);
+    background: linear-gradient(135deg, #00BCD4, #00ACC1);
+}
+
 body {
     margin: 0;
-    font-family: 'Baloo 2', cursive;
+    font-family: 'Baloo 2', 'Fredoka', sans-serif;
     min-height: 100vh;
     overflow-x: hidden;
-    background: linear-gradient(135deg, #ffd6e8, #c3f0ff, #fff1c1);
-    background-size: 300% 300%;
-    animation: bgMove 18s ease infinite;
+    background-image: url('https://images.unsplash.com/photo-1505118380757-91f5f5632de0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1926&q=80');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    position: relative;
 }
 
-@keyframes bgMove {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+/* Ocean overlay for depth */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(0, 105, 148, 0.4) 0%, rgba(10, 61, 98, 0.5) 100%);
+    pointer-events: none;
+    z-index: 1;
 }
 
-/* ---------- BACKGROUND BUBBLES ---------- */
-.bubbles {
+/* ---------- OCEAN WAVES ---------- */
+.waves {
     position: fixed;
     inset: 0;
     overflow: hidden;
@@ -33,174 +71,653 @@ body {
     pointer-events: none;
 }
 
+.wave {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="%23ffffff" fill-opacity="0.1" d="M0,192L48,197.3C96,203,192,213,288,208C384,203,480,181,576,186.7C672,192,768,224,864,224C960,224,1056,192,1152,170.7C1248,149,1344,139,1392,133.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+    background-size: cover;
+    animation: waveMove 15s linear infinite;
+}
+
+.wave2 {
+    bottom: 30px;
+    opacity: 0.15;
+    animation: waveMove 18s linear infinite reverse;
+}
+
+.wave3 {
+    bottom: 60px;
+    opacity: 0.1;
+    animation: waveMove 20s linear infinite;
+}
+
+@keyframes waveMove {
+    0% { transform: translateX(0) translateY(0); }
+    50% { transform: translateX(-25%) translateY(-10px); }
+    100% { transform: translateX(-50%) translateY(0); }
+}
+
+/* ---------- OCEAN BUBBLES ---------- */
+.bubbles {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    z-index: 2;
+    pointer-events: none;
+}
+
 .bubbles span {
     position: absolute;
     bottom: -120px;
-    background: rgba(255,255,255,0.22);
+    background: rgba(255, 255, 255, 0.25);
     border-radius: 50%;
-    animation: rise 26s linear infinite;
+    animation: rise 22s linear infinite;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+}
+
+.bubbles span::after {
+    content: "";
+    position: absolute;
+    top: -20%;
+    left: -20%;
+    right: -20%;
+    bottom: -20%;
+    background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+    border-radius: 50%;
 }
 
 @keyframes rise {
     0% {
-        transform: translateY(0) scale(0.8);
+        transform: translateY(0) scale(0.6);
         opacity: 0;
     }
-    10% { opacity: 0.55; }
+    15% { opacity: 0.7; }
     100% {
-        transform: translateY(-130vh) scale(1.3);
+        transform: translateY(-130vh) scale(1.4);
         opacity: 0;
     }
+}
+
+/* ---------- OCEAN LIGHT RAYS ---------- */
+.light-rays {
+    position: fixed;
+    top: -50%;
+    left: -50%;
+    right: -50%;
+    bottom: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+    animation: rotateLight 40s linear infinite;
+    pointer-events: none;
+    z-index: 3;
+}
+
+@keyframes rotateLight {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ---------- CORAL DECORATIONS ---------- */
+.coral {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 120px;
+    background: linear-gradient(to top, rgba(255, 127, 80, 0.2), transparent);
+    z-index: 4;
+    pointer-events: none;
+}
+
+.coral-right {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 150px;
+    height: 200px;
+    background: linear-gradient(45deg, rgba(255, 127, 80, 0.15), rgba(255, 99, 71, 0.15));
+    clip-path: polygon(20% 100%, 40% 40%, 60% 70%, 80% 20%, 100% 100%);
+    z-index: 4;
+    pointer-events: none;
+}
+
+.coral-left {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 150px;
+    height: 180px;
+    background: linear-gradient(135deg, rgba(255, 182, 193, 0.15), rgba(255, 140, 0, 0.15));
+    clip-path: polygon(0% 100%, 20% 50%, 40% 80%, 60% 30%, 80% 60%, 100% 100%);
+    z-index: 4;
+    pointer-events: none;
+}
+
+/* ---------- SEAWEED ---------- */
+.seaweed {
+    position: fixed;
+    bottom: 0;
+    left: 10%;
+    width: 20px;
+    height: 150px;
+    background: linear-gradient(to top, #2E7D32, #1B5E20);
+    opacity: 0.2;
+    border-radius: 50% 50% 0 0;
+    transform: rotate(10deg);
+    animation: sway 8s ease-in-out infinite;
+    z-index: 4;
+    pointer-events: none;
+}
+
+.seaweed2 {
+    left: 20%;
+    height: 180px;
+    width: 25px;
+    transform: rotate(-5deg);
+    animation-delay: -2s;
+}
+
+.seaweed3 {
+    left: 80%;
+    height: 200px;
+    width: 22px;
+    transform: rotate(15deg);
+    animation-delay: -4s;
+}
+
+@keyframes sway {
+    0%, 100% { transform: rotate(10deg); }
+    50% { transform: rotate(-5deg); }
 }
 
 /* ---------- HEADER ---------- */
 header {
     position: relative;
-    z-index: 1;
+    z-index: 10;
     text-align: center;
-    padding: 25px 30px;
-    background: #ffffff;
-    border-radius: 30px;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.12);
-    margin: 30px auto;
-    max-width: 600px;
+    padding: 30px 35px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    border-radius: 50px;
+    box-shadow: 0 20px 40px rgba(0, 40, 80, 0.25);
+    margin: 40px auto;
+    max-width: 650px;
+    border: 2px solid rgba(255, 255, 255, 0.6);
+    border-bottom: 6px solid #00ACC1;
 }
 
 header h1 {
-    margin: 0 0 15px;
-    font-size: 28px;
-    color: #ff7a00;
+    margin: 0 0 12px;
+    font-size: 32px;
+    color: #006064;
+    text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.5);
+    letter-spacing: 2px;
+    font-weight: 700;
 }
 
 header p {
-    font-size: 15px;
-    color: #555;
+    font-size: 18px;
+    color: #00796B;
     margin: 0;
+    font-weight: 600;
 }
 
 /* ---------- GRID ---------- */
 .alphabet-grid {
     position: relative;
-    z-index: 1;
+    z-index: 10;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(95px, 1fr));
-    gap: 20px;
-    padding: 25px;
-    max-width: 960px;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 25px;
+    padding: 30px;
+    max-width: 1100px;
     margin: auto;
 }
 
-/* ---------- CARD ---------- */
+/* ---------- CARD - OCEAN THEMED ---------- */
 .card {
     position: relative;
-    height: 125px;
-    border-radius: 35px;
-    background: #ffffff;
-    box-shadow: 0 14px 30px rgba(0,0,0,0.15);
+    height: 140px;
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    background: linear-gradient(145deg, #ffffff, #f0f8ff);
+    box-shadow: 0 20px 35px rgba(0, 80, 120, 0.25),
+                inset 0 -5px 0 rgba(0, 100, 150, 0.2),
+                inset 0 5px 15px rgba(255, 255, 255, 0.8);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3.6rem;
-    font-weight: 700;
-    color: #3f51b5;
+    font-size: 4rem;
+    font-weight: 800;
     cursor: pointer;
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     overflow: hidden;
+    border: 3px solid rgba(255, 255, 255, 0.7);
+    border-bottom: 6px solid var(--card-border, #00BCD4);
+    animation: float 6s ease-in-out infinite;
+    animation-delay: calc(var(--index, 0) * 0.2s);
 }
 
-.card:hover {
-    transform: translateY(-12px) rotate(-1deg);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-}
-
-.card:active {
-    transform: scale(0.95);
-}
-
-/* ---------- CLICK RIPPLE ---------- */
-.bubble {
+.card::before {
+    content: "";
     position: absolute;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.85);
-    animation: ripple 0.7s ease-out forwards;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.6), transparent);
+    border-radius: inherit;
     pointer-events: none;
 }
 
-@keyframes ripple {
-    from { transform: scale(0.3); opacity: 1; }
-    to { transform: scale(2.5); opacity: 0; }
+.card::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 10%;
+    right: 10%;
+    height: 10px;
+    background: rgba(0, 150, 200, 0.2);
+    border-radius: 50%;
+    filter: blur(5px);
+    animation: shadowPulse 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% {
+        transform: translateY(0px) rotate(0deg);
+    }
+    50% {
+        transform: translateY(-12px) rotate(2deg);
+    }
+}
+
+@keyframes shadowPulse {
+    0%, 100% {
+        opacity: 0.2;
+        transform: scaleX(1);
+    }
+    50% {
+        opacity: 0.4;
+        transform: scaleX(1.2);
+    }
+}
+
+.card:hover {
+    transform: translateY(-18px) rotate(3deg) scale(1.05);
+    box-shadow: 0 30px 45px rgba(0, 120, 180, 0.35),
+                inset 0 -5px 0 rgba(0, 150, 200, 0.3),
+                inset 0 5px 20px rgba(255, 255, 255, 0.9);
+    border-color: rgba(255, 255, 255, 0.9);
+}
+
+.card:active {
+    transform: scale(0.92);
+    animation: none;
+}
+
+.card span {
+    position: relative;
+    z-index: 5;
+    text-shadow: 3px 3px 0 rgba(255, 255, 255, 0.5),
+                 5px 5px 15px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.card:hover span {
+    transform: scale(1.1);
+}
+
+/* ---------- OCEAN ANIMALS SILHOUETTES ---------- */
+.ocean-life {
+    position: fixed;
+    font-size: 2.8em;
+    color: rgba(255, 255, 255, 0.2);
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    pointer-events: none;
+    z-index: 5;
+    animation: swim 20s linear infinite;
+}
+
+.fish1 {
+    top: 15%;
+    left: 5%;
+    animation: swimRight 25s linear infinite;
+}
+
+.fish2 {
+    bottom: 20%;
+    right: 5%;
+    animation: swimLeft 22s linear infinite;
+    animation-delay: -5s;
+}
+
+.turtle {
+    top: 40%;
+    right: 8%;
+    font-size: 2.4em;
+    animation: swimRight 30s linear infinite;
+    animation-delay: -10s;
+}
+
+.dolphin {
+    bottom: 30%;
+    left: 3%;
+    font-size: 3em;
+    animation: swimLeft 28s linear infinite;
+    animation-delay: -15s;
+}
+
+@keyframes swimRight {
+    0% {
+        transform: translateX(-100px) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.2;
+    }
+    90% {
+        opacity: 0.2;
+    }
+    100% {
+        transform: translateX(calc(100vw + 100px)) rotate(10deg);
+        opacity: 0;
+    }
+}
+
+@keyframes swimLeft {
+    0% {
+        transform: translateX(calc(100vw + 100px)) rotate(180deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.2;
+    }
+    90% {
+        opacity: 0.2;
+    }
+    100% {
+        transform: translateX(-100px) rotate(190deg);
+        opacity: 0;
+    }
+}
+
+/* ---------- CLICK RIPPLE - BUBBLE ---------- */
+.bubble {
+    position: absolute;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.95), rgba(200, 230, 255, 0.8));
+    animation: bubbleRipple 1s ease-out forwards;
+    pointer-events: none;
+    box-shadow: 0 0 20px rgba(100, 200, 255, 0.6);
+    z-index: 20;
+}
+
+@keyframes bubbleRipple {
+    0% {
+        transform: scale(0.2);
+        opacity: 1;
+    }
+    70% {
+        opacity: 0.6;
+    }
+    100% {
+        transform: scale(3);
+        opacity: 0;
+    }
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (max-width: 768px) {
+    header {
+        margin: 20px;
+        padding: 20px;
+    }
+    
+    header h1 {
+        font-size: 26px;
+    }
+    
+    .alphabet-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        padding: 20px;
+    }
+    
+    .card {
+        height: 110px;
+        font-size: 3.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .alphabet-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+    
+    .card {
+        height: 100px;
+        font-size: 2.8rem;
+    }
+    
+    .ocean-life {
+        font-size: 2em;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<!-- Background Bubbles -->
+<!-- Back to Dashboard Button -->
+<a href="{{ url_for('dashboard') }}" class="back-btn" title="Back to Dashboard">
+    <i class="fas fa-arrow-left"></i>
+</a>
+
+<!-- Ocean Background Waves -->
+<div class="waves">
+    <div class="wave"></div>
+    <div class="wave wave2"></div>
+    <div class="wave wave3"></div>
+</div>
+
+<!-- Ocean Light Rays -->
+<div class="light-rays"></div>
+
+<!-- Ocean Bubbles -->
 <div class="bubbles">
-    <span style="left:6%;  width:28px; height:28px; animation-duration:24s;"></span>
-    <span style="left:18%; width:32px; height:32px; animation-duration:28s;"></span>
-    <span style="left:32%; width:30px; height:30px; animation-duration:26s;"></span>
-    <span style="left:48%; width:36px; height:36px; animation-duration:30s;"></span>
-    <span style="left:62%; width:29px; height:29px; animation-duration:25s;"></span>
-    <span style="left:78%; width:34px; height:34px; animation-duration:29s;"></span>
-    <span style="left:90%; width:31px; height:31px; animation-duration:27s;"></span>
+    <span style="left:5%; width:25px; height:25px; animation-duration:20s;"></span>
+    <span style="left:15%; width:35px; height:35px; animation-duration:24s; animation-delay:2s;"></span>
+    <span style="left:28%; width:22px; height:22px; animation-duration:26s; animation-delay:4s;"></span>
+    <span style="left:42%; width:40px; height:40px; animation-duration:22s; animation-delay:1s;"></span>
+    <span style="left:55%; width:28px; height:28px; animation-duration:28s; animation-delay:6s;"></span>
+    <span style="left:68%; width:32px; height:32px; animation-duration:25s; animation-delay:3s;"></span>
+    <span style="left:80%; width:38px; height:38px; animation-duration:30s; animation-delay:5s;"></span>
+    <span style="left:92%; width:26px; height:26px; animation-duration:23s; animation-delay:7s;"></span>
+</div>
+
+<!-- Coral Decorations -->
+<div class="coral"></div>
+<div class="coral-left"></div>
+<div class="coral-right"></div>
+
+<!-- Seaweed -->
+<div class="seaweed"></div>
+<div class="seaweed seaweed2"></div>
+<div class="seaweed seaweed3"></div>
+
+<!-- Ocean Animal Silhouettes (No emojis, pure CSS shapes) -->
+<div class="ocean-life fish1">
+    <svg width="60" height="30" viewBox="0 0 60 30" fill="rgba(255,255,255,0.15)">
+        <path d="M10,15 L30,5 L50,15 L30,25 Z" />
+        <circle cx="20" cy="15" r="2" fill="rgba(255,255,255,0.3)"/>
+    </svg>
+</div>
+
+<div class="ocean-life fish2">
+    <svg width="50" height="25" viewBox="0 0 50 25" fill="rgba(255,255,255,0.12)">
+        <path d="M5,12.5 L20,5 L40,12.5 L20,20 Z" />
+        <circle cx="15" cy="12.5" r="1.5" fill="rgba(255,255,255,0.25)"/>
+    </svg>
+</div>
+
+<div class="ocean-life turtle">
+    <svg width="45" height="35" viewBox="0 0 45 35" fill="rgba(255,255,255,0.1)">
+        <ellipse cx="22" cy="17" rx="15" ry="10" />
+        <circle cx="15" cy="15" r="3" />
+        <circle cx="29" cy="15" r="3" />
+        <path d="M10,22 L8,28 M35,22 L37,28 M15,25 L12,32 M30,25 L33,32" stroke="rgba(255,255,255,0.15)" stroke-width="2"/>
+    </svg>
+</div>
+
+<div class="ocean-life dolphin">
+    <svg width="55" height="25" viewBox="0 0 55 25" fill="rgba(255,255,255,0.1)">
+        <path d="M10,12 Q25,2 45,8 Q35,12 45,18 Q25,24 10,12" />
+        <path d="M45,8 L52,5 L48,10 Z" />
+    </svg>
 </div>
 
 <header>
-    <h1>Alphabet Learning</h1>
-    <p>Tap a letter to hear the sound</p>
+    <h1>ABCD</h1>
+    <p>dive in • tap a letter • hear the sound</p>
 </header>
 
 <div class="alphabet-grid" id="alphabetGrid"></div>
 
 <script>
 const grid = document.getElementById("alphabetGrid");
-const colors = ['#ff7a00', '#3f51b5', '#4caf50', '#ff5722', '#9c27b0', '#00bcd4', '#ffc107', '#795548', '#607d8b', '#e91e63'];
+const oceanColors = [
+    '#006064', // deep teal
+    '#00796B', // teal
+    '#00838F', // dark cyan
+    '#0097A7', // cyan
+    '#00ACC1', // light cyan
+    '#4DB6AC', // greenish teal
+    '#26A69A', // green blue
+    '#2C3E50', // dark blue
+    '#1E4A5F', // navy teal
+    '#0D5C63', // deep sea
+    '#1565C0', // ocean blue
+    '#0277BD', // sky blue
+    '#0288D1', // water blue
+    '#039BE5', // light blue
+    '#03A9F4', // bright blue
+    '#29B6F6', // ice blue
+    '#4FC3F7', // pale blue
+    '#80DEEA', // very light blue
+    '#4DD0E1', // turquoise
+    '#26C6DA', // bright turquoise
+    '#00BCD4', // cyan
+    '#00ACC1', // dark cyan
+    '#0097A7', // teal
+    '#00838F', // deep teal
+    '#00695C', // dark green teal
+    '#004D40'  // very dark teal
+];
 
 // Create A–Z
 for (let i = 65; i <= 90; i++) {
     const letter = String.fromCharCode(i);
+    const colorIndex = (i - 65) % oceanColors.length;
+    const delayIndex = (i - 65) * 0.1;
 
     const card = document.createElement("div");
     card.className = "card";
-
+    card.style.setProperty('--card-border', oceanColors[colorIndex]);
+    card.style.setProperty('--index', delayIndex);
+    
+    // Add gradient overlay
+    card.style.background = `linear-gradient(145deg, #ffffff, #f8fcff)`;
+    
     const span = document.createElement("span");
     span.textContent = letter;
-    span.style.color = colors[(i - 65) % colors.length];
+    span.style.color = oceanColors[colorIndex];
+    span.style.textShadow = `2px 2px 0 rgba(255,255,255,0.8), 4px 4px 12px ${oceanColors[colorIndex]}40`;
     card.appendChild(span);
 
     card.addEventListener("click", (e) => {
         speak(letter);
         bubbleEffect(e, card);
+        
+        // Add flash effect
+        card.style.background = `linear-gradient(145deg, #ffffff, ${oceanColors[colorIndex]}20)`;
+        setTimeout(() => {
+            card.style.background = `linear-gradient(145deg, #ffffff, #f8fcff)`;
+        }, 200);
     });
 
     grid.appendChild(card);
 }
 
-// Speech
+// Speech with ocean-like echo effect
 function speak(letter) {
     window.speechSynthesis.cancel();
     const msg = new SpeechSynthesisUtterance(letter);
     msg.lang = "en-US";
-    msg.rate = 0.8;
-    msg.pitch = 1.1;
+    msg.rate = 0.75; // Slower, like underwater
+    msg.pitch = 1.2; // Higher pitch, like bubbles
+    msg.volume = 1;
     window.speechSynthesis.speak(msg);
+    
+    // Add second echo
+    setTimeout(() => {
+        const echo = new SpeechSynthesisUtterance(letter);
+        echo.lang = "en-US";
+        echo.rate = 0.7;
+        echo.pitch = 0.9;
+        echo.volume = 0.4;
+        window.speechSynthesis.speak(echo);
+    }, 150);
 }
 
-// Click ripple
+// Click ripple - bubble effect
 function bubbleEffect(event, card) {
+    // Create main bubble
     const bubble = document.createElement("span");
     bubble.className = "bubble";
 
     const rect = card.getBoundingClientRect();
-    bubble.style.left = (event.clientX - rect.left - 9) + "px";
-    bubble.style.top = (event.clientY - rect.top - 9) + "px";
-
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    
+    bubble.style.left = (x - 11) + "px";
+    bubble.style.top = (y - 11) + "px";
+    
+    // Random bubble color
+    const hue = 180 + Math.random() * 40;
+    bubble.style.background = `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(${100 + Math.random() * 100}, ${200 + Math.random() * 55}, 255, 0.8))`;
+    
     card.appendChild(bubble);
-    setTimeout(() => bubble.remove(), 700);
+    
+    // Create smaller surrounding bubbles
+    for (let i = 0; i < 3; i++) {
+        setTimeout(() => {
+            const smallBubble = document.createElement("span");
+            smallBubble.className = "bubble";
+            smallBubble.style.width = (10 + Math.random() * 10) + "px";
+            smallBubble.style.height = smallBubble.style.width;
+            smallBubble.style.left = (x - 5 + (Math.random() - 0.5) * 40) + "px";
+            smallBubble.style.top = (y - 5 + (Math.random() - 0.5) * 40) + "px";
+            smallBubble.style.animationDuration = "0.8s";
+            smallBubble.style.background = `radial-gradient(circle at 30% 30%, rgba(255,255,255,0.9), rgba(200, 230, 255, 0.7))`;
+            card.appendChild(smallBubble);
+            setTimeout(() => smallBubble.remove(), 800);
+        }, i * 50);
+    }
+    
+    setTimeout(() => bubble.remove(), 1000);
 }
+
+// Add ripple effect to header
+document.querySelector('header').addEventListener('click', (e) => {
+    bubbleEffect(e, document.querySelector('header'));
+});
 </script>
 
 </body>

@@ -2,27 +2,752 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Kids Learning App</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Segoe UI', cursive, sans-serif;
+            background: url('https://images.unsplash.com/photo-1516627145497-ae6968895b74?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.7);
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 500px;
+            margin: 40px auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 40px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            border: 5px solid #FFB6C1;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #87CEEB, #98D8C8);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 5px solid #FFB6C1;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 2.2em;
+            text-shadow: 3px 3px 0 #FF69B4;
+            margin: 0;
+        }
+
+        .header h1 i {
+            margin: 0 10px;
+            color: #FFD700;
+        }
+
+        .login-card {
+            background: white;
+            margin: 20px;
+            padding: 30px 35px;
+            border-radius: 30px;
+            box-shadow: 0 8px 0 #FFB6C1;
+            border: 3px solid #FF69B4;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            background: linear-gradient(135deg, #4a00e0 0%, #8e2de2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-align: center;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #4682B4;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            font-weight: bold;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            color: #4682B4;
+            font-weight: bold;
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        label i {
+            margin-right: 8px;
+            color: #FF69B4;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 3px solid #87CEEB;
+            border-radius: 30px;
+            font-size: 1rem;
+            font-family: 'Comic Sans MS', cursive;
+            background: white;
+            color: #000000 !important;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #FF69B4;
+            box-shadow: 0 0 0 5px rgba(255, 105, 180, 0.2);
+        }
+
+        input:hover {
+            border-color: #FF69B4;
+            transform: scale(1.01);
+        }
+
+        /* Error State */
+        input.error {
+            border-color: #ff6b6b;
+            background-color: #fff8f8;
+            animation: shake 0.3s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        /* Server Error State - Red with pulse animation */
+        input.server-error {
+            border-color: #ff3333;
+            background-color: #fff0f0;
+            box-shadow: 0 0 0 3px rgba(255, 51, 51, 0.3);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 3px rgba(255, 51, 51, 0.3); }
+            50% { box-shadow: 0 0 0 6px rgba(255, 51, 51, 0.5); }
+        }
+
+        /* Valid State */
+        input.valid {
+            border-color: #4CAF50;
+            background-color: #f0fff0;
+        }
+
+        .input-feedback {
+            min-height: 20px;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            padding-left: 15px;
+            font-weight: 500;
+        }
+
+        /* Server Error Feedback */
+        .input-feedback.server-error-text {
+            color: #ff3333 !important;
+            font-weight: bold;
+            font-size: 0.9rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Password Container */
+        .password-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-container input {
+            padding-right: 80px;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 5px;
+            background: linear-gradient(135deg, #87CEEB, #98D8C8);
+            color: white;
+            border: 2px solid white;
+            padding: 8px 18px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Comic Sans MS', cursive;
+            box-shadow: 0 4px 0 #4682B4;
+        }
+
+        .toggle-password:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #4682B4;
+            background: linear-gradient(135deg, #98D8C8, #87CEEB);
+        }
+
+        /* Remember Me Checkbox */
+        .remember-me {
+            display: flex;
+            align-items: center;
+            margin: 15px 0 20px;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+            accent-color: #FF69B4;
+        }
+
+        .remember-me label {
+            margin-bottom: 0;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        /* Submit Button */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #FF69B4, #FFB6C1);
+            color: white;
+            border: 3px solid white;
+            border-radius: 50px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            font-family: 'Comic Sans MS', cursive;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 0 #FF1493;
+            margin-top: 10px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 11px 0 #FF1493;
+        }
+
+        .btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: translateY(0);
+            box-shadow: 0 8px 0 #FF1493;
+        }
+
+        .btn i {
+            margin-right: 10px;
+        }
+
+        .btn-loader {
+            position: absolute;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .spinner {
+            width: 25px;
+            height: 25px;
+            border: 3px solid #ffffff;
+            border-top: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error Message */
+        .error {
+            background: #ff6b6b;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 30px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-align: center;
+            border: 3px solid white;
+            box-shadow: 0 5px 0 #d63031;
+            animation: slideDown 0.3s ease;
+        }
+
+        .error i {
+            margin-right: 8px;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Links */
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+            text-align: center;
+        }
+
+        .link {
+            color: #4682B4;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 8px;
+            transition: all 0.3s ease;
+            border-radius: 25px;
+        }
+
+        .link:hover {
+            color: #FF69B4;
+            transform: translateX(5px);
+            background: #F0F8FF;
+        }
+
+        .link i {
+            margin-right: 8px;
+        }
+
+        /* Cloud Decorations */
+        .cloud {
+            position: absolute;
+            background: white;
+            border-radius: 1000px;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .cloud1 {
+            width: 150px;
+            height: 60px;
+            top: 50px;
+            left: 20px;
+        }
+
+        .cloud2 {
+            width: 200px;
+            height: 80px;
+            bottom: 50px;
+            right: 20px;
+        }
+
+        /* Highlight Animation */
+        .error-highlight {
+            animation: highlight 1s ease-in-out;
+        }
+
+        @keyframes highlight {
+            0%, 100% { background-color: transparent; }
+            50% { background-color: rgba(255, 107, 107, 0.1); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .login-card {
+                padding: 20px 18px;
+                margin: 15px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Cloud decorations -->
+    <div class="cloud cloud1"></div>
+    <div class="cloud cloud2"></div>
+
     <div class="container">
-        <h1>Welcome Back!</h1>
-        <form method="POST" action="{{ url_for('login') }}">
-            <div class="form-group">
-                <label for="phone">Phone Number:</label>
-                <input type="tel" id="phone" name="phone" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
+        <div class="header">
+            <h1>
+                <i class="fas fa-star"></i>
+                Welcome Back
+                <i class="fas fa-star"></i>
+            </h1>
+        </div>
+
+        <div class="login-card">
+            <div class="logo">Kids Learning</div>
+            <p class="subtitle">
+                <i class="fas fa-smile"></i>
+                Welcome back! Please login to continue
+                <i class="fas fa-smile"></i>
+            </p>
+            
+            <!-- Simple red error box (only shows when there's an error) -->
             {% if error %}
-                <div class="error">{{ error }}</div>
+            <div class="error" id="serverErrorMessage">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ error }}
+            </div>
             {% endif %}
-            <button type="submit" class="btn">Login</button>
-        </form>
-        <p>Don't have an account? <a href="{{ url_for('signin') }}">Sign Up here</a></p>
+            
+            <!-- Client-side error message (hidden by default) -->
+            <div class="error" id="clientErrorMessage" style="display: none;">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="clientErrorText"></span>
+            </div>
+            
+            <!-- Login form -->
+            <form id="loginForm" method="POST" action="/login">
+                <div class="form-group" id="phone-group">
+                    <label><i class="fas fa-phone"></i> Phone Number</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Enter 10-digit phone number starting with 6-9"
+                           value="{{ phone or '' }}" required>
+                    <div class="input-feedback" id="phoneFeedback"></div>
+                </div>
+
+                <div class="form-group" id="password-group">
+                    <label><i class="fas fa-lock"></i> Password</label>
+                    <div class="password-container">
+                        <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                        <button type="button" class="toggle-password" id="togglePassword">
+                            <i class="fas fa-eye"></i> Show
+                        </button>
+                    </div>
+                    <div class="input-feedback" id="passwordFeedback"></div>
+                </div>
+
+                <div class="remember-me">
+                    <input type="checkbox" id="remember" name="remember">
+                    <label for="remember"><i class="fas fa-check-circle"></i> Remember me</label>
+                </div>
+
+                <button type="submit" class="btn" id="loginBtn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span class="btn-text">Login</span>
+                    <div class="btn-loader" id="btnLoader" style="display: none;">
+                        <div class="spinner"></div>
+                    </div>
+                </button>
+            </form>
+            
+            <!-- Only one Create Account link at the bottom -->
+            <div class="links">
+                <a href="/signin" class="link">
+                    <i class="fas fa-user-plus"></i>
+                    Create Account
+                </a>
+                <a href="/" class="link">
+                    <i class="fas fa-home"></i>
+                    Back to Home
+                </a>
+            </div>
+        </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const loginForm = document.getElementById('loginForm');
+            const phoneInput = document.getElementById('phone');
+            const passwordInput = document.getElementById('password');
+            const togglePasswordBtn = document.getElementById('togglePassword');
+            const loginBtn = document.getElementById('loginBtn');
+            const btnLoader = document.getElementById('btnLoader');
+            const btnText = document.querySelector('.btn-text');
+            const clientErrorMessage = document.getElementById('clientErrorMessage');
+            const clientErrorText = document.getElementById('clientErrorText');
+            const serverErrorMessage = document.getElementById('serverErrorMessage');
+            const phoneFeedback = document.getElementById('phoneFeedback');
+            const passwordFeedback = document.getElementById('passwordFeedback');
+            
+            // Group elements for highlighting
+            const phoneGroup = document.getElementById('phone-group');
+            const passwordGroup = document.getElementById('password-group');
+            
+            // Store original feedback div content
+            const originalPhoneFeedback = phoneFeedback.innerHTML;
+            const originalPasswordFeedback = passwordFeedback.innerHTML;
+            
+            // Check for server error in URL parameters or from server-side
+            function checkServerError() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const errorType = urlParams.get('error');
+                
+                if (errorType === 'phone_not_found') {
+                    phoneInput.classList.add('server-error');
+                    phoneFeedback.innerHTML = '❌ Phone number not found. Please register first.';
+                    phoneFeedback.classList.add('server-error-text');
+                    phoneFeedback.style.color = '#ff3333';
+                    
+                    // Auto-hide after 5 seconds
+                    setTimeout(() => {
+                        phoneInput.classList.remove('server-error');
+                        phoneFeedback.innerHTML = originalPhoneFeedback;
+                        phoneFeedback.classList.remove('server-error-text');
+                        phoneFeedback.style.color = '';
+                    }, 5000);
+                } else if (errorType === 'wrong_password') {
+                    passwordInput.classList.add('server-error');
+                    passwordFeedback.innerHTML = '❌ Wrong password. Please try again.';
+                    passwordFeedback.classList.add('server-error-text');
+                    passwordFeedback.style.color = '#ff3333';
+                    
+                    // Auto-hide after 5 seconds
+                    setTimeout(() => {
+                        passwordInput.classList.remove('server-error');
+                        passwordFeedback.innerHTML = originalPasswordFeedback;
+                        passwordFeedback.classList.remove('server-error-text');
+                        passwordFeedback.style.color = '';
+                    }, 5000);
+                }
+            }
+            
+            // Run on page load
+            checkServerError();
+            
+            // Hide server error message when user starts typing
+            if (serverErrorMessage) {
+                phoneInput.addEventListener('input', function() {
+                    serverErrorMessage.style.display = 'none';
+                });
+                passwordInput.addEventListener('input', function() {
+                    serverErrorMessage.style.display = 'none';
+                });
+            }
+            
+            // Remove server error styling when user types in the field
+            phoneInput.addEventListener('input', function() {
+                this.classList.remove('server-error');
+                phoneFeedback.innerHTML = originalPhoneFeedback;
+                phoneFeedback.classList.remove('server-error-text');
+                phoneFeedback.style.color = '';
+                
+                // Also trigger regular validation
+                let phone = this.value.replace(/\D/g, '');
+                this.value = phone;
+                
+                this.classList.remove('error', 'valid');
+                
+                if (phone.length > 0) {
+                    if (phone.length < 10) {
+                        phoneFeedback.textContent = `Need ${10 - phone.length} more digits`;
+                        phoneFeedback.style.color = '#ff6b6b';
+                        this.classList.add('error');
+                    } else if (phone.length === 10) {
+                        if (/^[6-9]/.test(phone)) {
+                            phoneFeedback.textContent = '✓ Valid phone number format';
+                            phoneFeedback.style.color = '#4CAF50';
+                            this.classList.add('valid');
+                        } else {
+                            phoneFeedback.textContent = 'Phone number must start with 6-9';
+                            phoneFeedback.style.color = '#ff6b6b';
+                            this.classList.add('error');
+                        }
+                    }
+                } else {
+                    phoneFeedback.textContent = '';
+                }
+            });
+            
+            passwordInput.addEventListener('input', function() {
+                this.classList.remove('server-error');
+                passwordFeedback.innerHTML = originalPasswordFeedback;
+                passwordFeedback.classList.remove('server-error-text');
+                passwordFeedback.style.color = '';
+                
+                // Also trigger regular validation
+                const password = this.value;
+                
+                this.classList.remove('error', 'valid');
+                
+                if (password.length > 0) {
+                    if (password.length < 6) {
+                        passwordFeedback.textContent = 'Minimum 6 characters required';
+                        passwordFeedback.style.color = '#ff6b6b';
+                        this.classList.add('error');
+                    } else {
+                        passwordFeedback.textContent = '✓ Password length valid';
+                        passwordFeedback.style.color = '#4CAF50';
+                        this.classList.add('valid');
+                    }
+                } else {
+                    passwordFeedback.textContent = '';
+                }
+            });
+
+            // Toggle password visibility
+            togglePasswordBtn.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                passwordInput.setAttribute('type', type);
+                this.innerHTML = type === 'text' ? 
+                    '<i class="fas fa-eye-slash"></i> Hide' : 
+                    '<i class="fas fa-eye"></i> Show';
+                
+                // Add button animation
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+            
+            // Highlight error function
+            function highlightError(element) {
+                if (element) {
+                    element.classList.add('error-highlight');
+                    setTimeout(() => {
+                        element.classList.remove('error-highlight');
+                    }, 1000);
+                }
+            }
+
+            // Scroll to element function
+            function scrollToElement(element, offset = 100) {
+                if (element) {
+                    const elementPosition = element.getBoundingClientRect().top + window.pageYOffset;
+                    const offsetPosition = elementPosition - offset;
+                    
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            }
+            
+            // Form submission - only format validation, server handles authentication
+            loginForm.addEventListener('submit', function(e) {
+                // Get values
+                const phone = phoneInput.value.replace(/\D/g, '');
+                const password = passwordInput.value;
+
+                let isValid = true;
+                let errorMessages = [];
+                let firstErrorElement = null;
+
+                // Remove existing highlights and server errors
+                [phoneGroup, passwordGroup].forEach(group => {
+                    group.classList.remove('error-highlight');
+                });
+                
+                // Clear server error classes on submit
+                phoneInput.classList.remove('server-error');
+                passwordInput.classList.remove('server-error');
+                phoneFeedback.innerHTML = originalPhoneFeedback;
+                passwordFeedback.innerHTML = originalPasswordFeedback;
+                phoneFeedback.classList.remove('server-error-text');
+                passwordFeedback.classList.remove('server-error-text');
+                phoneFeedback.style.color = '';
+                passwordFeedback.style.color = '';
+
+                // Hide previous client error message
+                clientErrorMessage.style.display = 'none';
+                
+                // Validate phone format
+                if (!/^[6-9]\d{9}$/.test(phone)) {
+                    phoneFeedback.textContent = '10-digit phone number starting with 6-9 required';
+                    phoneFeedback.style.color = '#ff6b6b';
+                    phoneInput.classList.add('error');
+                    isValid = false;
+                    errorMessages.push('Invalid phone number');
+                    highlightError(phoneGroup);
+                    if (!firstErrorElement) firstErrorElement = phoneGroup;
+                }
+
+                // Validate password length
+                if (password.length < 6) {
+                    passwordFeedback.textContent = 'Password must be at least 6 characters';
+                    passwordFeedback.style.color = '#ff6b6b';
+                    passwordInput.classList.add('error');
+                    isValid = false;
+                    errorMessages.push('Password too short');
+                    highlightError(passwordGroup);
+                    if (!firstErrorElement) firstErrorElement = passwordGroup;
+                }
+
+                // If format validation fails, show error and prevent submission
+                if (!isValid) {
+                    e.preventDefault();
+                    clientErrorText.textContent = errorMessages.join(', ');
+                    clientErrorMessage.style.display = 'block';
+                    
+                    if (firstErrorElement) {
+                        setTimeout(() => {
+                            scrollToElement(firstErrorElement, 120);
+                        }, 100);
+                    }
+                    
+                    return;
+                }
+
+                // Format is valid - show loading state and let form submit normally
+                btnLoader.style.display = 'flex';
+                btnText.style.visibility = 'hidden';
+                loginBtn.disabled = true;
+                
+                // Form will submit normally to server
+                // Server will handle:
+                // 1. Checking if phone exists
+                // 2. Verifying password
+                // 3. Returning error message with appropriate parameters
+                // 4. Redirecting on success
+            });
+            
+            // Enter key support
+            passwordInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    loginForm.dispatchEvent(new Event('submit'));
+                }
+            });
+
+            // Initial phone value check if exists
+            if (phoneInput.value) {
+                phoneInput.dispatchEvent(new Event('input'));
+            }
+        });
+    </script>
 </body>
 </html>

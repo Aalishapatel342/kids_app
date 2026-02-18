@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Activities - Kids Learning App</title>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Baloo+2:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        body {
+            font-family: 'Comic Neue', cursive;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background shapes */
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 20s infinite linear;
+        }
+
+        .shape-1 {
+            width: 120px;
+            height: 120px;
+            top: 10%;
+            left: 5%;
+            background: rgba(255, 255, 255, 0.15);
+            animation-delay: 0s;
+        }
+
+        .shape-2 {
+            width: 180px;
+            height: 180px;
+            top: 70%;
+            right: 5%;
+            background: rgba(255, 255, 255, 0.15);
+            animation-delay: -5s;
+        }
+
+        .shape-3 {
+            width: 90px;
+            height: 90px;
+            top: 20%;
+            right: 15%;
+            background: rgba(255, 255, 255, 0.15);
+            animation-delay: -10s;
+        }
+
+        .shape-4 {
+            width: 150px;
+            height: 150px;
+            bottom: 10%;
+            left: 10%;
+            background: rgba(255, 255, 255, 0.15);
+            animation-delay: -7s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg) scale(1);
+            }
+            25% {
+                transform: translateY(-40px) rotate(90deg) scale(1.1);
+            }
+            50% {
+                transform: translateY(-20px) rotate(180deg) scale(1);
+            }
+            75% {
+                transform: translateY(-50px) rotate(270deg) scale(1.1);
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Header Section */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 25px;
+            background: white;
+            color: #667eea;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            transform: translateX(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            background: #f8f9fa;
+        }
+
+        .back-link i {
+            font-size: 1.2rem;
+        }
+
+        .stats-badge {
+            background: white;
+            padding: 12px 25px;
+            border-radius: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .stats-badge i {
+            color: #ffd700;
+            margin-right: 5px;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.3);
+            font-family: 'Baloo 2', cursive;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2rem;
+            margin-bottom: 40px;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Category Filter */
+        .category-filter {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 25px;
+            background: white;
+            color: #667eea;
+            font-family: 'Comic Neue', cursive;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        /* Activities Grid */
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            padding: 20px 0;
+        }
+
+        .activity-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            border: 3px solid transparent;
+        }
+
+        .activity-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .activity-card:hover {
+            transform: translateY(-15px) scale(1.02);
+            box-shadow: 0 25px 40px rgba(0,0,0,0.3);
+            border-color: #ffd700;
+        }
+
+        .activity-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .activity-card:hover .activity-icon {
+            transform: rotate(360deg) scale(1.1);
+        }
+
+        .activity-icon i {
+            font-size: 3rem;
+            color: white;
+        }
+
+        .activity-card h3 {
+            color: #333;
+            margin: 15px 0 10px;
+            font-size: 1.8rem;
+            font-family: 'Baloo 2', cursive;
+        }
+
+        .activity-description {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .activity-features {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .activity-features p {
+            margin: 8px 0;
+            color: #555;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .activity-features i {
+            width: 20px;
+            color: #667eea;
+        }
+
+        .reward-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 10px;
+            background: #fff3cd;
+            border-radius: 30px;
+            color: #856404;
+        }
+
+        .reward-info i {
+            color: #ffd700;
+        }
+
+        .difficulty-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .difficulty-badge.beginner {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .difficulty-badge.intermediate {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .difficulty-badge.advanced {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .activity-card .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-family: 'Comic Neue', cursive;
+            font-weight: bold;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .activity-card .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .activity-card .btn i {
+            transition: transform 0.3s;
+        }
+
+        .activity-card .btn:hover i {
+            transform: translateX(5px);
+        }
+
+        /* Features Section */
+        .features-section {
+            margin-top: 60px;
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .features-section h2 {
+            text-align: center;
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            font-family: 'Baloo 2', cursive;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 25px;
+            border-radius: 20px;
+            background: #f8f9fa;
+            transition: all 0.3s;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .feature-item i {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .feature-item h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 1.3rem;
+        }
+
+        .feature-item p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Progress Tips */
+        .progress-tips {
+            margin-top: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 30px;
+            color: white;
+            text-align: center;
+        }
+
+        .progress-tips h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .tips-list {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tip {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 30px;
+        }
+
+        .tip i {
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .activities-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-section {
+                flex-direction: column;
+            }
+            
+            .features-section {
+                padding: 20px;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tips-list {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background shapes -->
+    <div class="floating-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="shape shape-3"></div>
+        <div class="shape shape-4"></div>
+    </div>
+
+    <div class="container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <a href="{{ url_for('dashboard') }}" class="back-link">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+            <div class="stats-badge">
+                <i class="fas fa-star"></i> Total Activities: {{ activities|length }}
+            </div>
+        </div>
+
+        <h1>🎮 Explore All Activities</h1>
+        <p class="subtitle">
+            Discover fun learning activities designed to make education enjoyable! 
+            Each activity helps you earn coins and track your progress.
+        </p>
+
+        <!-- Category Filter -->
+        <div class="category-filter">
+            <button class="filter-btn" onclick="filterActivities('learning')">Learning</button>
+            <button class="filter-btn" onclick="filterActivities('creative')">Creative</button>
+            <button class="filter-btn" onclick="filterActivities('quiz')">Quiz & Games</button>
+            <button class="filter-btn" onclick="filterActivities('story')">Story Time</button>
+        </div>
+
+        <!-- Activities Grid -->
+        <div class="activities-grid" id="activitiesGrid">
+            <!-- Learn Alphabet -->
+            <div class="activity-card" data-category="learning">
+                <div class="activity-icon">
+                    <i class="fas fa-font"></i>
+                </div>
+                <span class="difficulty-badge beginner">Beginner</span>
+                <h3>Learn Alphabet</h3>
+                <p class="activity-description">
+                    Master the ABCs with fun animations and sounds!
+                </p>
+                <div class="activity-features">
+                    <p><i class="fas fa-check-circle"></i> 26 letters with examples</p>
+                    <p><i class="fas fa-music"></i> Alphabet songs & rhymes</p>
+                    <p><i class="fas fa-pencil-alt"></i> Tracing practice</p>
+                    <p><i class="fas fa-gamepad"></i> Matching games</p>
+                </div>
+                <div class="reward-info">
+                    <i class="fas fa-coins"></i> Earn 5 coins per letter
+                </div>
+            </div>
+
+            <!-- Learn Numbers -->
+            <div class="activity-card" data-category="learning">
+                <div class="activity-icon">
+                    <i class="fas fa-calculator"></i>
+                </div>
+                <span class="difficulty-badge beginner">Beginner</span>
+                <h3>Learn Numbers</h3>
+                <p class="activity-description">
+                    Count from 1 to 100 with fun visuals and activities!
+                </p>
+                <div class="activity-features">
+                    <p><i class="fas fa-check-circle"></i> Number recognition 1-100</p>
+                    <p><i class="fas fa-sort-amount-up"></i> Counting practice</p>
+                    <p><i class="fas fa-hand-pointer"></i> Interactive exercises</p>
+                    <p><i class="fas fa-chart-line"></i> Progress tracking</p>
+                </div>
+                <div class="reward-info">
+                    <i class="fas fa-coins"></i> Earn 5 coins per number
+                </div>
+            </div>
+
+            <!-- Drawing -->
+            <div class="activity-card" data-category="creative">
+                <div class="activity-icon">
+                    <i class="fas fa-paint-brush"></i>
+                </div>
+                <span class="difficulty-badge beginner">Beginner</span>
+                <h3>Drawing</h3>
+                <p class="activity-description">
+                    Express your creativity with our digital drawing pad!
+                </p>
+                <div class="activity-features">
+                    <p><i class="fas fa-palette"></i> 20+ colors to choose</p>
+                    <p><i class="fas fa-eraser"></i> Easy eraser tool</p>
+                    <p><i class="fas fa-save"></i> Save your drawings</p>
+                    <p><i class="fas fa-share"></i> Share with friends</p>
+                </div>
+                <div class="reward-info">
+                    <i class="fas fa-coins"></i> Earn 10 coins per drawing
+                </div>
+            </div>
+
+            <!-- Shape Builder -->
+            <div class="activity-card" data-category="creative">
+                <div class="activity-icon">
+                    <i class="fas fa-shapes"></i>
+                </div>
+                <span class="difficulty-badge intermediate">Intermediate</span>
+                <h3>Shape Builder</h3>
+                <p class="activity-description">
+                    Build amazing structures using different shapes!
+                </p>
+                <div class="activity-features">
+                    <p><i class="fas fa-square"></i> Multiple shape types</p>
+                    <p><i class="fas fa-rotate"></i> Rotate & resize shapes</p>
+                    <p><i class="fas fa-tasks"></i> 4+ building challenges</p>
+                    <p><i class="fas fa-star"></i> Earn achievements</p>
+                </div>
+                <div class="reward-info">
+                    <i class="fas fa-coins"></i> Earn 20 coins per challenge
+                </div>
+            </div>
+
+            <!-- Smart Quiz -->
+            <div class="activity-card" data-category="quiz">
+                <div class="activity-icon">
+                    <i class="fas fa-question-circle"></i>
+                </div>
+                <span class="difficulty-badge intermediate">Intermediate</span>
+                <h3>Smart Quiz</h3>
+                <p class="activity-description">
+                    Test your knowledge with fun quizzes across categories!
+                </p>
+                <div class="activity-features">
+                    <p><i class="fas fa-book"></i> 6+ quiz categories</p>
+                    <p><i class="fas fa-list-ol"></i> 30+ quiz questions</p>
+                    <p><i class="fas fa-trophy"></i> Score tracking</p>
+                    <p><i class="fas fa-chart-bar"></i> Progress reports</p>
+                </div>
+                <div class="reward-info">
+                    <i class="fas fa-coins"></i> Earn 1 coin per correct answer
+                </div>
+            </div>
+
+            <!-- Color Carnival -->
+            <div class="activity-card" data-category="quiz">
+                <div class="activity-icon">
+                    <i class="fas fa-palette"></i>
+                </div>
+                <span class="difficulty-badge beginner">Beginner</span>
+                <h3>Color Carnival</h3>
+                <p class="activity-description">
+                    Spin the wheel and learn colors while earning coins!
+                </p>
+                <div class="activity-features">
+                    <p><i class="fas fa-spinner"></i> Spin the color wheel</p>
+                    <p><i class="fas fa-paint-brush"></i> 15+ colors to learn</p>
+                    <p><i class="fas fa-coins"></i> Win coins on every spin</p>
+                    <p><i class="fas fa-gamepad"></i> Fun animations</p>
+                </div>
+                <div class="reward-info">
+                    <i class="fas fa-coins"></i> Earn 5 coins per spin
+                </div>
+            </div>
+
+            <!-- Story Time -->
+            <div class="activity-card" data-category="story">
+                <div class="activity-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <span class="difficulty-badge beginner">Beginner</span>
+                <h3>Story Time</h3>
+                <p class="activity-description">
+                    Listen to amazing stories with colorful illustrations!
+                </p>
+                <div class="activity-features">
+                    <p><i class="fas fa-headphones"></i> Audio narration</p>
+                    <p><i class="fas fa-image"></i> Picture illustrations</p>
+                    <p><i class="fas fa-bookmark"></i> Save favorites</p>
+                    <p><i class="fas fa-clock"></i> New stories weekly</p>
+                </div>
+                <div class="reward-info">
+                    <i class="fas fa-coins"></i> Earn 15 coins per story
+                </div>
+            </div>
+
+            <!-- Math Games -->
+            <div class="activity-card" data-category="quiz">
+                <div class="activity-icon">
+                    <i class="fas fa-plus-circle"></i>
+                </div>
+                <span class="difficulty-badge intermediate">Intermediate</span>
+                <h3>Math Games</h3>
+                <p class="activity-description">
+                    Practice addition, subtraction, and more with fun games!
+                </p>
+                <div class="activity-features">
+                    <p><i class="fas fa-plus"></i> Addition practice</p>
+                    <p><i class="fas fa-minus"></i> Subtraction games</p>
+                    <p><i class="fas fa-times"></i> Multiplication tables</p>
+                    <p><i class="fas fa-divide"></i> Division basics</p>
+                </div>
+                <div class="reward-info">
+                    <i class="fas fa-coins"></i> Earn 10 coins per level
+                </div>
+            </div>
+
+            <!-- Career Explorer -->
+            <div class="activity-card" data-category="learning">
+                <div class="activity-icon">
+                    <i class="fas fa-briefcase"></i>
+                </div>
+                <span class="difficulty-badge advanced">Advanced</span>
+                <h3>Career Explorer</h3>
+                <p class="activity-description">
+                    Learn about different careers and what people do!
+                </p>
+                <div class="activity-features">
+                    <p><i class="fas fa-user-md"></i> Doctor</p>
+                    <p><i class="fas fa-chalkboard-teacher"></i> Teacher</p>
+                    <p><i class="fas fa-fire-extinguisher"></i> Firefighter</p>
+                    <p><i class="fas fa-robot"></i> 8+ career options</p>
+                </div>
+                <div class="reward-info">
+                    <i class="fas fa-coins"></i> Earn 15 coins per career
+                </div>
+            </div>
+        </div>
+
+        <!-- Features Section -->
+        <div class="features-section">
+            <h2>✨ App Features</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <i class="fas fa-coins"></i>
+                    <h3>Coin Rewards</h3>
+                    <p>Earn coins for every activity completed. Collect coins to unlock achievements!</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-chart-line"></i>
+                    <h3>Progress Tracking</h3>
+                    <p>Track your learning progress with detailed statistics and performance reports.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-trophy"></i>
+                    <h3>Achievements</h3>
+                    <p>Unlock badges and achievements as you master new skills and complete challenges.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-child"></i>
+                    <h3>Kid-Friendly</h3>
+                    <p>Safe, ad-free environment designed specifically for young learners.</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-mobile-alt"></i>
+                    <h3>Mobile Friendly</h3>
+                    <p>Works on all devices - learn anywhere, anytime!</p>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-users"></i>
+                    <h3>Multiple Users</h3>
+                    <p>Supports multiple children with individual progress tracking.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Tips -->
+        <div class="progress-tips">
+            <h3>💡 Tips for Success</h3>
+            <div class="tips-list">
+                <div class="tip">
+                    <i class="fas fa-clock"></i>
+                    <span>Learn 15 minutes daily</span>
+                </div>
+                <div class="tip">
+                    <i class="fas fa-star"></i>
+                    <span>Complete all activities</span>
+                </div>
+                <div class="tip">
+                    <i class="fas fa-coins"></i>
+                    <span>Save coins for rewards</span>
+                </div>
+                <div class="tip">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Track your progress</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Filter activities by category
+        function filterActivities(category) {
+            const activities = document.querySelectorAll('.activity-card');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            
+            // Update active button
+            filterBtns.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(category) || 
+                    (category === 'all' && btn.textContent.includes('All'))) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Filter activities
+            activities.forEach(activity => {
+                if (category === 'all') {
+                    activity.style.display = 'block';
+                } else {
+                    if (activity.dataset.category === category) {
+                        activity.style.display = 'block';
+                    } else {
+                        activity.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Animate cards on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.activity-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.5s ease';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

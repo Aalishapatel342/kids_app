@@ -3,27 +3,48 @@ class ShapeBuilderGame {
         this.shapes = [];
         this.selectedShape = null;
         this.currentTask = null;
-        this.userId = localStorage.getItem('shapeBuilderUserId') || 'test_user';
-        if (!localStorage.getItem('shapeBuilderUserId')) {
-            localStorage.setItem('shapeBuilderUserId', this.userId);
-        }
         this.selectedColor = '#FF6B6B';
         this.shapeHistory = [];
+        this.isDragging = false;
+        this.dragOffset = { x: 0, y: 0 };
 
         this.init();
     }
     
-    init() {
-        this.loadUserStats();
-        this.loadNewTask();
-        this.setupEventListeners();
-        this.setupDragAndDrop();
+    async init() {
+        const isLoggedIn = await this.checkAuth();
+        if (isLoggedIn) {
+            this.loadUserStats();
+            this.loadNewTask();
+            this.setupEventListeners();
+            this.setupDragAndDrop();
+        }
+    }
+    
+    async checkAuth() {
+        try {
+            const response = await fetch('/api/user_stats');
+            if (response.ok) {
+                return true;
+            } else {
+                window.location.href = '/login';
+                return false;
+            }
+        } catch (error) {
+            console.error('Auth check failed:', error);
+            window.location.href = '/login';
+            return false;
+        }
     }
     
     setupEventListeners() {
-        // Shape palette
+        // Shape palette - use mousedown instead of dragstart for better control
         document.querySelectorAll('.shape-option').forEach(option => {
-            option.addEventListener('dragstart', this.handleShapeDragStart.bind(this));
+            option.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                const type = e.currentTarget.dataset.type;
+                this.startShapeCreation(type);
+            });
         });
         
         // Color palette
@@ -34,14 +55,12 @@ class ShapeBuilderGame {
                 this.selectedColor = e.target.dataset.color;
                 
                 if (this.selectedShape) {
-                    this.selectedShape.element.style.backgroundColor = this.selectedColor;
-                    this.selectedShape.color = this.selectedColor;
-                    this.saveToHistory();
+                    this.updateShapeColor(this.selectedShape, this.selectedColor);
                 }
             });
         });
         
-        // Canvas click
+        // Canvas click for deselection
         document.getElementById('canvas').addEventListener('click', (e) => {
             if (e.target === document.getElementById('canvas')) {
                 this.deselectAllShapes();
@@ -50,25 +69,20 @@ class ShapeBuilderGame {
         
         // Control sliders
         document.getElementById('size-slider').addEventListener('input', (e) => {
-            const size = e.target.value + 'px';
-            document.getElementById('size-value').textContent = size;
+            const size = e.target.value;
+            document.getElementById('size-value').textContent = size + 'px';
             
             if (this.selectedShape) {
-                this.selectedShape.element.style.width = size;
-                this.selectedShape.element.style.height = size;
-                this.selectedShape.size = size;
-                this.saveToHistory();
+                this.updateShapeSize(this.selectedShape, size);
             }
         });
         
         document.getElementById('rotation-slider').addEventListener('input', (e) => {
-            const rotation = e.target.value + 'deg';
-            document.getElementById('rotation-value').textContent = rotation;
+            const rotation = e.target.value;
+            document.getElementById('rotation-value').textContent = rotation + '°';
             
             if (this.selectedShape) {
-                this.selectedShape.element.style.transform = `rotate(${rotation})`;
-                this.selectedShape.rotation = rotation;
-                this.saveToHistory();
+                this.updateShapeRotation(this.selectedShape, rotation);
             }
         });
         
@@ -80,85 +94,135 @@ class ShapeBuilderGame {
         document.getElementById('next-btn').addEventListener('click', () => this.loadNewTask());
         
         // Make first color active
-        document.querySelector('.color-option').classList.add('active');
+        const firstColor = document.querySelector('.color-option');
+        if (firstColor) {
+            firstColor.classList.add('active');
+        }
+
+        // Add mouse move and up for canvas
+        document.addEventListener('mousemove', (e) => this.handleMouseMove(e));
+        document.addEventListener('mouseup', (e) => this.handleMouseUp(e));
     }
     
     setupDragAndDrop() {
         const canvas = document.getElementById('canvas');
-
-        canvas.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            canvas.style.backgroundColor = 'rgba(74, 84, 225, 0.1)';
-        });
-
-        canvas.addEventListener('dragleave', () => {
-            canvas.style.backgroundColor = '';
-        });
-
-        canvas.addEventListener('drop', (e) => {
-            e.preventDefault();
-            canvas.style.backgroundColor = '';
-
-            const type = e.dataTransfer.getData('text/plain');
-            if (type) {
-                const rect = canvas.getBoundingClientRect();
-                let x = e.clientX - rect.left;
-                let y = e.clientY - rect.top;
-
-                // Clamp to keep shape inside canvas
-                const shapeSize = 80;
-                x = Math.max(shapeSize/2, Math.min(rect.width - shapeSize/2, x));
-                y = Math.max(shapeSize/2, Math.min(rect.height - shapeSize/2, y));
-
-                this.createShape(type, x, y);
-            }
-        });
+        
+        // Remove default drag behavior
+        canvas.addEventListener('dragover', (e) => e.preventDefault());
+        canvas.addEventListener('drop', (e) => e.preventDefault());
     }
     
-    handleShapeDragStart(e) {
-        e.dataTransfer.setData('text/plain', e.currentTarget.dataset.type);
-        e.dataTransfer.effectAllowed = 'copy';
+    startShapeCreation(type) {
+        // Create a preview shape that follows mouse
+        this.isCreating = true;
+        this.creatingType = type;
+        
+        const canvas = document.getElementById('canvas');
+        canvas.style.cursor = 'crosshair';
+        
+        // Show instruction
+        this.showNotification('Click on canvas to place shape', 'info');
+    }
+    
+    handleMouseMove(e) {
+        if (this.isDragging && this.draggedShape) {
+            // Handle shape dragging
+            e.preventDefault();
+            
+            const canvas = document.getElementById('canvas');
+            const rect = canvas.getBoundingClientRect();
+            
+            // Calculate new position
+            let x = e.clientX - rect.left - this.dragOffset.x;
+            let y = e.clientY - rect.top - this.dragOffset.y;
+            
+            // Constrain to canvas
+            const shapeRect = this.draggedShape.element.getBoundingClientRect();
+            x = Math.max(0, Math.min(rect.width - shapeRect.width, x));
+            y = Math.max(0, Math.min(rect.height - shapeRect.height, y));
+            
+            // Update position
+            this.draggedShape.element.style.left = x + 'px';
+            this.draggedShape.element.style.top = y + 'px';
+            
+            // Update shape data
+            this.draggedShape.position = {
+                x: x + shapeRect.width/2,
+                y: y + shapeRect.height/2
+            };
+        }
+    }
+    
+    handleMouseUp(e) {
+        if (this.isDragging && this.draggedShape) {
+            // Finish dragging
+            this.isDragging = false;
+            this.draggedShape.element.classList.remove('dragging');
+            this.draggedShape = null;
+            this.saveToHistory();
+        }
+        
+        if (this.isCreating) {
+            // Place shape on click
+            const canvas = document.getElementById('canvas');
+            const rect = canvas.getBoundingClientRect();
+            
+            if (e.clientX >= rect.left && e.clientX <= rect.right && 
+                e.clientY >= rect.top && e.clientY <= rect.bottom) {
+                
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                this.createShape(this.creatingType, x, y);
+            }
+            
+            this.isCreating = false;
+            canvas.style.cursor = 'default';
+        }
     }
     
     createShape(type, x, y) {
-        const shapeId = 'shape_' + Date.now();
+        const shapeId = 'shape_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
         const shape = document.createElement('div');
         shape.className = 'draggable-shape';
         shape.id = shapeId;
+        shape.dataset.type = type;
         
-        // Position at drop point
-        shape.style.left = (x - 40) + 'px';
-        shape.style.top = (y - 40) + 'px';
-        shape.style.width = '80px';
-        shape.style.height = '80px';
+        // Set initial size
+        const initialSize = 60;
+        shape.style.width = initialSize + 'px';
+        shape.style.height = initialSize + 'px';
+        
+        // Position (center the shape on click point)
+        shape.style.left = (x - initialSize/2) + 'px';
+        shape.style.top = (y - initialSize/2) + 'px';
         shape.style.backgroundColor = this.selectedColor;
+        shape.style.transform = 'rotate(0deg)';
         
         // Shape specific styles
-        switch(type) {
-            case 'circle':
-                shape.style.borderRadius = '50%';
-                break;
-            case 'triangle':
-                shape.style.width = '0';
-                shape.style.height = '0';
-                shape.style.backgroundColor = 'transparent';
-                shape.style.borderLeft = '40px solid transparent';
-                shape.style.borderRight = '40px solid transparent';
-                shape.style.borderBottom = '80px solid ' + this.selectedColor;
-                break;
-            case 'rectangle':
-                shape.style.width = '120px';
-                shape.style.height = '60px';
-                break;
-            // Square is default
+        if (type === 'circle') {
+            shape.style.borderRadius = '50%';
+        } else if (type === 'triangle') {
+            shape.style.width = '0';
+            shape.style.height = '0';
+            shape.style.backgroundColor = 'transparent';
+            shape.style.borderLeft = (initialSize/2) + 'px solid transparent';
+            shape.style.borderRight = (initialSize/2) + 'px solid transparent';
+            shape.style.borderBottom = initialSize + 'px solid ' + this.selectedColor;
+        } else if (type === 'rectangle') {
+            shape.style.width = '90px';
+            shape.style.height = '45px';
         }
         
+        // Make shape draggable
+        this.makeDraggable(shape);
+        
+        // Add click handler
         shape.addEventListener('click', (e) => {
             e.stopPropagation();
             this.selectShape(shapeId);
         });
         
-        this.makeDraggable(shape);
         document.getElementById('canvas').appendChild(shape);
         
         const shapeData = {
@@ -166,8 +230,8 @@ class ShapeBuilderGame {
             type: type,
             element: shape,
             color: this.selectedColor,
-            size: type === 'rectangle' ? '120px 60px' : '80px',
-            rotation: '0deg',
+            size: initialSize,
+            rotation: 0,
             position: { x, y }
         };
         
@@ -175,54 +239,28 @@ class ShapeBuilderGame {
         this.selectShape(shapeId);
         this.saveToHistory();
         
-        this.showNotification(`Added ${type} shape!`, 'info');
+        this.showNotification(`Added ${type} shape!`, 'success');
     }
     
     makeDraggable(element) {
-        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-        
-        element.addEventListener('mousedown', dragMouseDown);
-        
-        function dragMouseDown(e) {
-            e = e || window.event;
+        element.addEventListener('mousedown', (e) => {
             e.preventDefault();
             e.stopPropagation();
             
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            document.onmouseup = closeDragElement;
-            document.onmousemove = elementDrag;
-            element.classList.add('dragging');
-        }
-        
-        const elementDrag = (e) => {
-            e = e || window.event;
-            e.preventDefault();
+            // Start dragging
+            this.isDragging = true;
+            this.draggedShape = this.shapes.find(s => s.id === element.id);
             
-            pos1 = pos3 - e.clientX;
-            pos2 = pos4 - e.clientY;
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            
-            element.style.top = (element.offsetTop - pos2) + "px";
-            element.style.left = (element.offsetLeft - pos1) + "px";
-        }
-        
-        const closeDragElement = () => {
-            document.onmouseup = null;
-            document.onmousemove = null;
-            element.classList.remove('dragging');
-
-            // Update shape position in data
-            const shape = this.shapes.find(s => s.id === element.id);
-            if (shape) {
-                shape.position = {
-                    x: element.offsetLeft + 40,
-                    y: element.offsetTop + 40
-                };
-                this.saveToHistory();
+            if (this.draggedShape) {
+                // Calculate offset from mouse to element corner
+                const rect = element.getBoundingClientRect();
+                this.dragOffset.x = e.clientX - rect.left;
+                this.dragOffset.y = e.clientY - rect.top;
+                
+                element.classList.add('dragging');
+                this.selectShape(element.id);
             }
-        };
+        });
     }
     
     selectShape(shapeId) {
@@ -234,13 +272,23 @@ class ShapeBuilderGame {
             this.selectedShape = shape;
             
             // Update controls
-            const size = parseInt(shape.size) || 80;
+            let size = shape.size || 60;
             document.getElementById('size-slider').value = size;
             document.getElementById('size-value').textContent = size + 'px';
             
-            const rotation = parseInt(shape.rotation) || 0;
+            let rotation = shape.rotation || 0;
             document.getElementById('rotation-slider').value = rotation;
             document.getElementById('rotation-value').textContent = rotation + '°';
+            
+            // Update color selection
+            if (shape.color) {
+                const colorBtn = document.querySelector(`.color-option[data-color="${shape.color}"]`);
+                if (colorBtn) {
+                    document.querySelectorAll('.color-option').forEach(c => c.classList.remove('active'));
+                    colorBtn.classList.add('active');
+                    this.selectedColor = shape.color;
+                }
+            }
         }
     }
     
@@ -249,6 +297,41 @@ class ShapeBuilderGame {
             shape.element.classList.remove('selected');
         });
         this.selectedShape = null;
+    }
+    
+    updateShapeColor(shape, color) {
+        shape.color = color;
+        if (shape.type === 'triangle') {
+            shape.element.style.borderBottomColor = color;
+        } else {
+            shape.element.style.backgroundColor = color;
+        }
+        this.saveToHistory();
+    }
+    
+    updateShapeSize(shape, size) {
+        shape.size = size;
+        
+        if (shape.type === 'triangle') {
+            shape.element.style.borderLeftWidth = (size/2) + 'px';
+            shape.element.style.borderRightWidth = (size/2) + 'px';
+            shape.element.style.borderBottomWidth = size + 'px';
+            shape.element.style.borderBottomColor = shape.color;
+        } else if (shape.type === 'rectangle') {
+            shape.element.style.width = (size * 1.5) + 'px';
+            shape.element.style.height = (size * 0.75) + 'px';
+        } else {
+            shape.element.style.width = size + 'px';
+            shape.element.style.height = size + 'px';
+        }
+        
+        this.saveToHistory();
+    }
+    
+    updateShapeRotation(shape, rotation) {
+        shape.rotation = rotation;
+        shape.element.style.transform = `rotate(${rotation}deg)`;
+        this.saveToHistory();
     }
     
     deleteSelectedShape() {
@@ -261,11 +344,13 @@ class ShapeBuilderGame {
                 this.selectedShape = null;
                 this.showNotification('Shape deleted!', 'info');
             }
+        } else {
+            this.showNotification('No shape selected', 'info');
         }
     }
     
     clearCanvas() {
-        if (confirm('Are you sure you want to clear all shapes?')) {
+        if (this.shapes.length > 0 && confirm('Clear all shapes?')) {
             this.shapes.forEach(shape => shape.element.remove());
             this.shapes = [];
             this.selectedShape = null;
@@ -276,22 +361,26 @@ class ShapeBuilderGame {
     
     undo() {
         if (this.shapeHistory.length > 1) {
-            this.shapeHistory.pop(); // Remove current state
+            this.shapeHistory.pop();
             const previousState = this.shapeHistory[this.shapeHistory.length - 1];
             this.restoreState(previousState);
             this.showNotification('Undo successful!', 'info');
+        } else {
+            this.showNotification('Nothing to undo', 'info');
         }
     }
     
     saveToHistory() {
-        // Save current state
         const state = this.shapes.map(shape => ({
-            ...shape,
-            element: null // Don't save DOM element
+            id: shape.id,
+            type: shape.type,
+            color: shape.color,
+            size: shape.size,
+            rotation: shape.rotation,
+            position: { ...shape.position }
         }));
         this.shapeHistory.push(JSON.parse(JSON.stringify(state)));
         
-        // Limit history size
         if (this.shapeHistory.length > 20) {
             this.shapeHistory.shift();
         }
@@ -307,34 +396,32 @@ class ShapeBuilderGame {
             const shape = document.createElement('div');
             shape.className = 'draggable-shape';
             shape.id = shapeData.id;
-            shape.style.left = shapeData.position.x - 40 + 'px';
-            shape.style.top = shapeData.position.y - 40 + 'px';
-            shape.style.backgroundColor = shapeData.color;
-            shape.style.transform = `rotate(${shapeData.rotation})`;
+            shape.dataset.type = shapeData.type;
             
-            switch(shapeData.type) {
-                case 'circle':
-                    shape.style.borderRadius = '50%';
-                    shape.style.width = shapeData.size;
-                    shape.style.height = shapeData.size;
-                    break;
-                case 'triangle':
-                    shape.style.width = '0';
-                    shape.style.height = '0';
-                    shape.style.backgroundColor = 'transparent';
-                    const size = parseInt(shapeData.size);
-                    shape.style.borderLeft = (size/2) + 'px solid transparent';
-                    shape.style.borderRight = (size/2) + 'px solid transparent';
-                    shape.style.borderBottom = size + 'px solid ' + shapeData.color;
-                    break;
-                case 'rectangle':
-                    const [width, height] = shapeData.size.split(' ').map(v => parseInt(v));
-                    shape.style.width = width + 'px';
-                    shape.style.height = height + 'px';
-                    break;
-                default:
-                    shape.style.width = shapeData.size;
-                    shape.style.height = shapeData.size;
+            shape.style.left = (shapeData.position.x - shapeData.size/2) + 'px';
+            shape.style.top = (shapeData.position.y - shapeData.size/2) + 'px';
+            shape.style.transform = `rotate(${shapeData.rotation}deg)`;
+            
+            if (shapeData.type === 'circle') {
+                shape.style.borderRadius = '50%';
+                shape.style.backgroundColor = shapeData.color;
+                shape.style.width = shapeData.size + 'px';
+                shape.style.height = shapeData.size + 'px';
+            } else if (shapeData.type === 'triangle') {
+                shape.style.width = '0';
+                shape.style.height = '0';
+                shape.style.backgroundColor = 'transparent';
+                shape.style.borderLeft = (shapeData.size/2) + 'px solid transparent';
+                shape.style.borderRight = (shapeData.size/2) + 'px solid transparent';
+                shape.style.borderBottom = shapeData.size + 'px solid ' + shapeData.color;
+            } else if (shapeData.type === 'rectangle') {
+                shape.style.backgroundColor = shapeData.color;
+                shape.style.width = (shapeData.size * 1.5) + 'px';
+                shape.style.height = (shapeData.size * 0.75) + 'px';
+            } else {
+                shape.style.backgroundColor = shapeData.color;
+                shape.style.width = shapeData.size + 'px';
+                shape.style.height = shapeData.size + 'px';
             }
             
             shape.addEventListener('click', (e) => {
@@ -356,7 +443,14 @@ class ShapeBuilderGame {
     
     async loadNewTask() {
         try {
-            const response = await fetch(`/api/get_task?user_id=${this.userId}`);
+            const response = await fetch('/api/get_task');
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                throw new Error('Failed to load task');
+            }
             const task = await response.json();
             
             this.currentTask = task;
@@ -369,10 +463,10 @@ class ShapeBuilderGame {
             document.getElementById('next-btn').style.display = 'none';
             document.getElementById('done-btn').style.display = 'flex';
             
-            this.showNotification(`New task: ${task.name}!`, 'info');
+            this.showNotification(`New task: ${task.name}!`, 'success');
         } catch (error) {
             console.error('Error loading task:', error);
-            this.showNotification('Failed to load task. Please refresh.', 'error');
+            this.showNotification('Failed to load task', 'error');
         }
     }
     
@@ -394,18 +488,6 @@ class ShapeBuilderGame {
                 preview.style.borderBottomColor = shape.color;
             } else {
                 preview.style.backgroundColor = shape.color;
-            }
-            
-            if (shape.size) {
-                const size = parseInt(shape.size);
-                if (shape.type === 'triangle') {
-                    preview.style.borderLeftWidth = (size/2) + 'px';
-                    preview.style.borderRightWidth = (size/2) + 'px';
-                    preview.style.borderBottomWidth = size + 'px';
-                } else {
-                    preview.style.width = shape.size;
-                    preview.style.height = shape.size;
-                }
             }
             
             div.appendChild(preview);
@@ -431,8 +513,8 @@ class ShapeBuilderGame {
                 type: shape.type,
                 color: shape.color,
                 position: `${xPercent}% ${yPercent}%`,
-                size: shape.size,
-                rotation: shape.rotation
+                size: shape.size + 'px',
+                rotation: shape.rotation + 'deg'
             };
         });
 
@@ -443,11 +525,18 @@ class ShapeBuilderGame {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    user_id: this.userId,
                     task_id: this.currentTask.id,
                     shapes: shapeData
                 })
             });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                throw new Error('Validation failed');
+            }
 
             const result = await response.json();
 
@@ -458,7 +547,7 @@ class ShapeBuilderGame {
                 );
 
                 // Update coin display
-                this.loadUserStats();
+                await this.loadUserStats();
 
                 // Show next button
                 document.getElementById('next-btn').style.display = 'flex';
@@ -468,18 +557,23 @@ class ShapeBuilderGame {
             }
         } catch (error) {
             console.error('Validation error:', error);
-            this.showNotification('Validation failed. Please try again.', 'error');
+            this.showNotification('Validation failed', 'error');
         }
     }
     
     async loadUserStats() {
         try {
-            const response = await fetch(`/api/user_stats?user_id=${this.userId}`);
+            const response = await fetch('/api/user_stats');
+            if (!response.ok) {
+                if (response.status === 401) {
+                    window.location.href = '/login';
+                    return;
+                }
+                throw new Error('Failed to load stats');
+            }
             const stats = await response.json();
             
             document.getElementById('coin-count').textContent = stats.coins;
-            document.getElementById('completed-tasks').textContent = stats.completed_tasks;
-            document.getElementById('total-tasks').textContent = stats.total_tasks;
         } catch (error) {
             console.error('Error loading stats:', error);
         }
@@ -492,7 +586,7 @@ class ShapeBuilderGame {
         
         setTimeout(() => {
             notification.classList.remove('show');
-        }, 4000);
+        }, 3000);
     }
 }
 
